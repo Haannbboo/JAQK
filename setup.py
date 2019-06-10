@@ -14,7 +14,8 @@ def install_requirements():
         'requests>=2.1.0',
         'numpy>=1.14.0',
         'pyquery>=1.4.0',
-        'aiohttp>=3.4.0'
+        'aiohttp>=3.4.0',
+        'PySimpleGUI>=3.0.0'
         ]
     return reqs
         

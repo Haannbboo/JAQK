@@ -41,16 +41,26 @@ def save_dfs(dfs, stock, names):
     for i in range(len(dfs)):
         dfs[i].to_csv(path + '_' + names[i] + '.csv', index=False)
 
-def save(df, path, name='temp', file_type='csv',mode='w'):
+def save(df, name, file_type='.csv',mode='w', prt=True):
+    import PySimpleGUI as sg
     #path=input("Enter your path here: ")
-    cnt=0
-    while True:
-        try:
-            df.to_csv(path+name+'.'+file_type, index=False)
-            break
-        except FileNotFoundError:
-            path=input("File not right, enter your path here: ")
-        cnt+=1
-        if cnt==3:
-            print("Please check your path, it should be something like: ",end='')
-            path=os.path.dirname(os.path.dirname(os.path.dirname(__file__)))        
+    if '.' not in file_type:
+        raise ValueError("Parameter file_type in save() should has '.' before the file format...")
+    form_rows = [[sg.Text('Choose the save path')],
+                 [sg.Text('Save path: ', size=(15, 1)), sg.InputText(key='save'), sg.FolderBrowse()],
+                 [sg.Submit(), sg.Cancel()]]
+    window = sg.Window('Save path')
+    _, values = window.Layout(form_rows).Read()
+    window.Close()
+    path=values['save']
+    if path=='' or None:
+        print("You didn't choose a path for saving...")
+        return
+    try:
+        p=os.path.join(path, name+file_type)
+        df.to_csv(p, mode=mode)
+    except Exception as e:
+        print("Exception in client saver: "+str(e))
+        return
+    if prt:
+        print("Saved dataframe to "+p)

@@ -14,8 +14,9 @@ from basics.stocks import stock_list
 
 from factors.factors import get_factors
 
-from operations.Save import save
+from operations.Save import save # done
 from operations.Count import database_count
+from operations.Open import open_file
 
 #from operations.Open import open_file, open_general
 
@@ -26,7 +27,7 @@ from operations.Count import database_count
 # calculation.key.Beta is not done
 
 import calculation
-from get import update, getLastUpdate # Connected well
+from get import update, getLastUpdate, main_get # Connected well
 
 from operations.Path import path # not tested
 

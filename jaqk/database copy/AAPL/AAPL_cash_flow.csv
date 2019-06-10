@@ -1,0 +1,20 @@
+Statements,9/29/2018,9/30/2017,9/24/2016,9/26/2015
+Net Income,"59,531,000","48,351,000","45,687,000","53,394,000"
+Depreciation,"10,903,000","10,157,000","10,505,000","11,257,000"
+Adjustments To Net Income,"-27,694,000","10,640,000","9,634,000","5,353,000"
+Changes In Accounts Receivables,"-5,322,000","-2,093,000","527,000","417,000"
+Changes In Liabilities,"9,131,000","8,340,000","563,000","6,043,000"
+Changes In Inventories,"828,000","-2,723,000","217,000","-238,000"
+Changes In Other Operating Activities,"30,057,000","-8,447,000","-902,000","5,040,000"
+Total Cash Flow From Operating Activities,"77,434,000","64,225,000","66,231,000","81,266,000"
+Capital Expenditures,"-13,313,000","-12,451,000","-12,734,000","-11,247,000"
+Investments,"30,845,000","-33,542,000","-32,022,000","-44,417,000"
+Other Cash flows from Investing Activities,"-745,000","-124,000","-924,000","-26,000"
+Total Cash Flows From Investing Activities,"16,066,000","-46,446,000","-45,977,000","-56,274,000"
+Dividends Paid,"-13,712,000","-12,769,000","-12,150,000","-11,561,000"
+Sale Purchase of Stock,-,-,-,-
+Net Borrowings,"432,000","29,014,000","22,057,000","29,305,000"
+Other Cash Flows from Financing Activities,-,-,-,"749,000"
+Total Cash Flows From Financing Activities,"-87,876,000","-17,974,000","-20,890,000","-17,716,000"
+Effect Of Exchange Rate Changes,-,-,-,-
+Change In Cash and Cash Equivalents,"5,624,000","-195,000","-636,000","7,276,000"

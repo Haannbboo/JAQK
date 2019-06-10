@@ -53,6 +53,7 @@ async def getter(url, timeout=10, error=True, proxy=None):
             html = await r.text()
         error = False
     except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout):
+        # bug in catcher
         print("Connection Error, read time out")
         error = True
     if error == False:
@@ -80,14 +81,14 @@ async def parse(c, names, update=False, save_mode='w'):
             # print("Saved summary")
             # input("Press enter to continue")
             del html
-            await asyncio.sleep(0.27)
+            await asyncio.sleep(0.07)
         if not exist(c, names[3:6], update):
             html = await getter(urls[4])
             save_dfs(get_stats(html), c, names[3:6])
             # print("Saved statistics")
             # input("Press enter to continue")
             del html
-            await asyncio.sleep(0.27)
+            await asyncio.sleep(0.07)
         if not exist(c, names[0:3], update):
             html = await getter(urls[0])
             save_file(get_major_holders(html), c, names[0])
@@ -96,42 +97,42 @@ async def parse(c, names, update=False, save_mode='w'):
             # print("Saved holders")
             # input("Press enter to continue")
             del html
-            await asyncio.sleep(0.27)
+            await asyncio.sleep(0.07)
         if not exist(c, names[6:8], update):
             html = await getter(urls[5])
             save_dfs([get_executives(html), get_description(html)], c, names[6:8])
             # print("Saved executives and description")
             # input("Press enter to continue")
             del html
-            await asyncio.sleep(0.27)
+            await asyncio.sleep(0.07)
         if not exist(c, names[8:14], update):
             html = await getter(urls[6])
             save_analysis(get_analysis(html), c)
             # print("Saved analysis")
             # input("Press enter to continue")
             del html
-            await asyncio.sleep(0.27)
+            await asyncio.sleep(0.07)
         if not exist(c, 'income', update):
             html = await getter(urls[1])
             save_file(get_reports(html), c, 'income')
             # print("Saved income statement")
             # input("Press enter to continue")
             del html
-            await asyncio.sleep(0.27)
+            await asyncio.sleep(0.07)
         if not exist(c, 'balance', update):
             html = await getter(urls[2])
             save_file(get_reports(html), c, 'balance')
             # print("Saved balance sheet")
             # input("Press enter to continue")
             del html
-            await asyncio.sleep(0.27)
+            await asyncio.sleep(0.07)
         if not exist(c, 'cash_flow', update):
             html = await getter(urls[3])
             save_file(get_reports(html), c, 'cash_flow')
             # print("Saved cash flow statement")
             # input("Press enter to continue")
             del html
-            await asyncio.sleep(0.27)
+            await asyncio.sleep(0.07)
         # print("All saved for "+c)
     except Exception as e:
         bug = [[c, e]]
@@ -145,12 +146,13 @@ def get_all_stocks(exchange): # Get all stocks required using the stock_list ope
     return s
 
 
-def main(stocks='NYSE', update=False, batch=32):
+def main_get(stocks='NYSE', update=False, batch=64):
     '''
     exchange -- either NYSE or NASDAQ
     '''
     if stocks in ['NYSE', 'NASDAQ']: # load all stocks
         stocks = get_all_stocks(stocks)
+    stocks=stocks[0:batch]
     # stocks=['BABA'] #for testing
     # s=['BABA','AAPL','AMZN','JD','BIDU','WB','WFC','C','JPM','DPZ','BA','CVX','LUV'] # for sample testing
     names = ['major_holders', 'top_institutional_holders', 'top_mutual_fund_holders',
@@ -226,13 +228,37 @@ def update_each_day(day):
     needs_update_list = list(updates.intersection(stocksss)) 
     try:
         print(len(needs_update_list))
-        main(needs_update_list, update=True)  # no syntax error here
+        main_get(needs_update_list, update=True)  # no syntax error here
         # working smoothly now (not fast enough)
     except Exception as e:
         print("Exception in update each day: " + str(e))
     with open('datefile.txt', mode='w') as d:
         d.write(day)
     print("Done day - " + day)
+
+def speedtest():
+    import shutil
+    stock='NYSE'
+    t=[]
+    for i in range(16,256,8):
+        companies=get_all_stocks(stock)[0:i]
+        s=time.time()
+        main_get(stock, batch=i)
+        e=time.time()
+        t.append(round((e-s)/i, 4))
+        print("batch size {}: {}s".format(i, round((e-s)/i,3)))
+        for c in companies:
+            try:
+                shutil.rmtree(os.path.join('./database',c))
+            except FileNotFoundError:
+                print('FileNotFoundError: '+c)
+                continue
+        #input('cut point check')
+        gc.collect()
+        time.sleep(1)
+    return t
+        
+        
 
 
 def update():
