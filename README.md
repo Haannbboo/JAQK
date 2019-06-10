@@ -45,7 +45,7 @@ The official documentation is hosted by [github.io]()
   
 ## Getting help
 For usage questions, the best place to go to is [StackOverflow](https://stackoverflow.com/questions/tagged/JAQK);
-Further, general questions and discussions can also take place on the github [issues section]().
+Further, general questions and discussions can also take place on the github [issues section](https://github.com/Haannbboo/JAQK/issues).
 
 If you have any detailed question about the plan/design/develop of this tookit, feel free to contact me through my email.
 
