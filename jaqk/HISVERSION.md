@@ -12,3 +12,5 @@
 #### 0.0.2 Jun.12th 2019
 - 7pm, Jun.12th: Add client function: factors_name(), sheets_name()
 - 9pm, Jun.12th: Add client function: code_count()
+##### 0.0.2.1 Jun.13th 2019
+- 8am, Jun.13th: Update to reduce bug for PyPi import
