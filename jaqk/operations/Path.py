@@ -2,6 +2,11 @@ import pandas as _pd
 import os as _os
 
 def path(factor):
+    '''
+    factor - str - factor name (use names() to find out all factor names included)
+    returns the file name of the factor (e.g path('Total Assets') gives 'balance')
+    '''
+    # can be a loop or sommething
     # Still in abs path, need changes
     p=_os.path.abspath(_os.path.join(_os.path.dirname(__file__),_os.pardir))
     path=_os.path.join(p,'database')

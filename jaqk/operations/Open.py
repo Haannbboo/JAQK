@@ -12,6 +12,13 @@ datapath = _os.path.join(p, 'database')
 
 
 def open_file(stock, name):
+    '''
+    opener for opening sheets for client
+    stock - company name (e.g AAPL for apple inc.)
+    name - name of the sheet (e.g 'income' / 'balace')
+    use names() to see all names
+    returns a csv sheet of the sheet of the company
+    '''
     # datapath='/Users/hanbo/Desktop/ML/QA/JAQK/database/'
     if not isinstance(stock, str):
         raise TypeError("Parameter 'stock' should be a string, not a "
@@ -40,9 +47,12 @@ def open_file(stock, name):
 
 
 def open_general(file):
-    path = _os.path.join(datapath, 'general')
-    p = _os.path.join(path, file)
-    df = _pd.read_csv(p)
+    try:
+        path = _os.path.join(datapath, 'general')
+        p = _os.path.join(path, file)
+        df = _pd.read_csv(p)
+    except Exception as e:
+        print("Something wrong in opening the stock list: "+str(e))
     return df
 
 

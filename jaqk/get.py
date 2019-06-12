@@ -228,12 +228,13 @@ def _speedtestf():
     return t
 '''
 
-def main_get(stocks='ALL', batch=128):
+def main_get(stocks='ALL', batch=32):
     '''
-    Main getter for client, default update all stocks in NYSE and NASDAQ
-    stocks - default ALL, can be either NYSE or NASDAQ
-    batch - default 128, batch size for loop (recommend not to change)
+    Main getter for client, MUST be runned after installation of the package (default update all stocks in NYSE and NASDAQ)
+    stocks - str - default ALL, can be either NYSE or NASDAQ
+    batch - default 32, batch size for loop (recommend to change based on interest status)
     '''
+    if stocks not in ['NYSE','NASDAQ','ALL']
     main(stocks='NYSE', batch=batch)
     print("Updated NYSE data")
     main(stocks='NASDAQ', batch=batch)
@@ -253,6 +254,10 @@ def _getBetweenDay(begin_date):  # tested
 
 def getLastUpdate():  # get last update date of the database
     # client can access this
+    '''
+    get last update time
+    prints out the date and returns the date(str)
+    '''
     last_update = open('datefile.txt').readlines()[0]
     print("Last update time: " + last_update)
     return last_update
@@ -304,6 +309,11 @@ def update_all_days():
     
 
 def update():
+    '''
+    update function for JAQK package
+    this automatically catches days and companies need to be updated, and update
+    recommend to update every day
+    '''
     df=pd.DataFrame()
     df.to_csv('dates_temp.csv') # clear up cache
     global stocksss

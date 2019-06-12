@@ -21,16 +21,34 @@ def _CAGR():
 
     
 def IC(stock):
-    """Invested Capital - following calculations on investopedia.com"""
+    """
+    Invested Capital - following calculations on investopedia.com
+    stock - company name (e.g AAPL for apple inc.)
+    """
     return Invested_Book_Capital(stock)
 
 def Invested_Book_Capital(stock):
+    '''
+    Invested Book Capital - a component for calculating invest capital
+    stock - company name (e.g AAPL for apple inc.)
+    '''
     df=_open_file(stock,'balance')
     return _Invested_Book_Capital(df)
 
 def NIBCLS(stock):
+    '''
+    NIBCLS - account payable + other current liabilities
+    stock - company name (e.g AAPL for apple inc.)
+    '''
     df=_open_file(stock,'balance')
     return _NIBCLS(df)
+
+def Total_Assets(stock):
+    '''
+    Total Assets - resource with economic value that the company owns with the expectation of its future benefit
+    stock - company name (e.g AAPL for apple inc.)
+    '''
+    return _factor(_open_file(stock, 'balance'), 'Total Assets')
 
 # the following will be used for the class-base module
 '''

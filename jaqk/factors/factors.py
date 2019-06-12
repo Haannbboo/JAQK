@@ -65,7 +65,7 @@ def get_factors(companies, factors, year='NEWEST'):
         
 
 
-    
+''' for debugging
 factors=['Net Income','Total Assets','Total Revenue','Gross Profit']
 paths = [_path(f) for f in factors]
 d={}
@@ -75,3 +75,4 @@ for i in range(len(paths)):  # Avoid crowded IO
     else:
         d[paths[i]] += [factors[i]]
 df=_open_file('AAPL','income')
+'''

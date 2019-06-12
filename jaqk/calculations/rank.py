@@ -16,7 +16,11 @@ _factor_dic={'FCF':'cash_flow','IC':'balance','NIBCLS':'balance','Invested_Book_
 
 
 def factor_percentile(Factor,stock):
-    """return the percentile of the factor of the stock - list of floats"""
+    '''
+    Factor - str
+    stock - company you want to check
+    returns the percentile of the factor of the stock - a list of floats
+    '''
     if not isinstance(Factor,str):
         raise TypeError("Parameters 'factors' should a string")
     p0=_os.path.abspath(_os.path.join(_os.path.dirname(__file__),_os.pardir))
@@ -45,7 +49,11 @@ def factor_percentile(Factor,stock):
     return result
         
 def percentile(Factor, percentage=80):
-    """return top percentile of a factor - list of company names"""
+    '''
+    Factor - str
+    percentile - int, percentage you want to check
+    returns a list of companies with top percentile for the factor
+    '''
     if not isinstance(Factor,str):
         raise TypeError("Parameters 'factors' should a string")
     p=_os.path.join(_os.path.abspath(_os.path.join(_os.path.dirname(__file__),_os.pardir)),'database')
@@ -86,5 +94,5 @@ def percentile(Factor, percentage=80):
     result=[[d[i] for i in range(len(n)) if n[i][j]>=target[j]] for j in range(len(target))]
     return result
 
-def _CAGR(Factor):
+def _CAGR(Factor, years): # compound anual growth rate, not developed
     pass

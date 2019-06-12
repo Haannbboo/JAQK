@@ -26,13 +26,25 @@ class income:
         return _factor(self.__df, 'Net Income Applicable To Common Shares')
 
 def Total_Revenue(stock):
+    """
+    Total Revenue - total money received by a company
+    stock - company name (e.g AAPL for apple inc.)
+    """
     df=_open_file(stock,'income')
     return _factor(df, 'Total_Revenue')
 
 def Cost_of_Revenue(self):
+    """
+    Cost of Revenue - usually used with CoR/TR (total revenue), indicating stable financial health and possible strong sales
+    stock - company name (e.g AAPL for apple inc.)
+    """
     df=_open_file(stock,'income')
     return _factor(df, 'Cost of Revenue')
 
 def Gross_Profit(self):
+    """
+    Gross Profit - profits company makes after deducting the costs associated with making and selling its products 
+    stock - company name (e.g AAPL for apple inc.)
+    """
     df=_open_file(stock,'income')
     return _factor(df, 'Gross Profit')

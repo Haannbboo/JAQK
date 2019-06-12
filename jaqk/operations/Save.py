@@ -46,6 +46,14 @@ def save_dfs(dfs, stock, names):
         dfs[i].to_csv(path + '_' + names[i] + '.csv', index=False)
 
 def save(df, name, file_type='.csv',mode='w', prt=True):
+    '''
+    saver of financial sheets for client
+    df - pandas dataframe to save
+    name - desired name
+    file_type - file type, need to add '.' (e.g - .csv / .xls)
+    mode - recommend not change, default 'w' (create file if not exist, cover the data with each writes)
+    prt - print out result or not - Saved dataframe to {}(path)
+    '''
     import PySimpleGUI as sg
     #path=input("Enter your path here: ")
     if '.' not in file_type:

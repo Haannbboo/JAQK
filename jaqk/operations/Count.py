@@ -7,6 +7,9 @@ datapath = _os.path.join(p, 'database')
 
 
 def database_count():
+    '''
+    prints out the total number of companies and sheets in database
+    '''
     a=len(_os.listdir(datapath))-2
     b=_os.walk(datapath) # generator
     c=[1]
