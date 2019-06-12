@@ -1,17 +1,14 @@
-import os
-import pandas as pd
+import os as _os
+import pandas as _pd
 
 import gc as _gc
 
-import sys as _sys
 
-_sys.path.append('..')  # add previous directory to model object
-from operations.Path import path as _path
+from ..operations.Path import path as _path
 
-p = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
-
+p = _os.path.abspath(_os.path.join(_os.path.dirname(__file__), _os.pardir))
 global datapath
-datapath = os.path.join(p, 'database')
+datapath = _os.path.join(p, 'database')
 
 
 def open_file(stock, name):
@@ -33,9 +30,9 @@ def open_file(stock, name):
         except ValueError:
             raise ValueError(
                 'Parameter "name" should be the name of the financial sheets, not a factor name...Use path method to find the location of a factor')
-    path = os.path.join(datapath, stock, stock)
+    path = _os.path.join(datapath, stock, stock)
     try:
-        df = pd.read_csv(path + '_' + name + '.csv')
+        df = _pd.read_csv(path + '_' + name + '.csv')
     except FileNotFoundError:
         raise ValueError("There is no record of '" + stock + "' in database")
     _gc.collect()
@@ -43,9 +40,9 @@ def open_file(stock, name):
 
 
 def open_general(file):
-    path = os.path.join(datapath, 'general')
-    p = os.path.join(path, file)
-    df = pd.read_csv(p)
+    path = _os.path.join(datapath, 'general')
+    p = _os.path.join(path, file)
+    df = _pd.read_csv(p)
     return df
 
 
@@ -53,9 +50,9 @@ def open_dfs(ffactor):  # Not used yet, design for reduce IOs
     """return a generator"""
     p = '/Users/hanbo/Desktop/ML/QA/JAQK/database/'
     name = _path(ffactor)
-    dirs = os.listdir(p)
+    dirs = _os.listdir(p)
     d = [i for i in dirs if
-         os.path.isdir(os.path.join(p, i)) and os.path.exists(os.path.join(p, i, i) + '_' + name + '.csv')]
+         _os.path.isdir(_os.path.join(p, i)) and _os.path.exists(_os.path.join(p, i, i) + '_' + name + '.csv')]
     print(len(d))
     dfs = (open_file(i, name) for i in d)
     return dfs

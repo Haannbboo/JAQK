@@ -1,13 +1,13 @@
-import os
+import os as _os
 import pandas as _pd
 
-p = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
+p = _os.path.abspath(_os.path.join(_os.path.dirname(__file__), _os.pardir))
 global datapath
-datapath = os.path.join(p, 'database')
+datapath = _os.path.join(p, 'database')
 
 
 def save_file(df, stock, name, update=False):
-    path = os.path.join(datapath, stock, stock) + '_' + name + '.csv'
+    path = _os.path.join(datapath, stock, stock) + '_' + name + '.csv'
 
     if not update:
         pass
@@ -33,7 +33,7 @@ def save_file(df, stock, name, update=False):
 
 
 def save_analysis(dfs, stock):
-    path = os.path.join(os.path.join(datapath, stock), stock)
+    path = _os.path.join(_os.path.join(datapath, stock), stock)
     names = ['Earnings_Estimate', 'Revenue_Estimate', 'Ernings_History',
              'EPS_Trend', 'EPS_Revisions', 'Growth_Estimates']
     for i in range(len(dfs)):
@@ -41,7 +41,7 @@ def save_analysis(dfs, stock):
 
 
 def save_dfs(dfs, stock, names):
-    path = os.path.join(datapath, stock, stock)
+    path = _os.path.join(datapath, stock, stock)
     for i in range(len(dfs)):
         dfs[i].to_csv(path + '_' + names[i] + '.csv', index=False)
 
@@ -61,7 +61,7 @@ def save(df, name, file_type='.csv',mode='w', prt=True):
         print("You didn't choose a path for saving...")
         return
     try:
-        p=os.path.join(path, name+file_type)
+        p=_os.path.join(path, name+file_type)
         df.to_csv(p, mode=mode)
     except Exception as e:
         print("Exception in client saver: "+str(e))

@@ -1,7 +1,4 @@
-import sys as _sys
-_sys.path.append('..') # add previous directory to model object
-
-from operations.Format import _decimal
+from ..operations.Format import _decimal
 
 
 def total_assets(df): # Balance

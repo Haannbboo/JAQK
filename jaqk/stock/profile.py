@@ -1,9 +1,5 @@
-import sys as _sys
-_sys.path.append('..') # add previous directory to model object
-
-
-from operations.Open import open_file as _open_file
-from operations.Trans import _t_util, _translate
+from ..operations.Open import open_file as _open_file
+from ..operations.Trans import _t_util, _translate
 
 
 def Key_Executives(stock):

@@ -6,12 +6,9 @@ from scipy import stats as _Stats
 import gc as _gc
 
 
-import sys as _sys
-_sys.path.append('..') # add previous directory to model object
-
-from operations.Format import factor as _factor
-from operations.Path import path as _path
-from operations.Open import open_file as _open_file
+from ..operations.Format import factor as _factor
+from ..operations.Path import path as _path
+from ..operations.Open import open_file as _open_file
 #from factors import _balance, cash_flow, key, stats
 
 global _factor_dic

@@ -1,22 +1,23 @@
 import os as _os
 
 
-# __author__=='Hanbo'
-# __version__=='0.0.1'
+__author__=='Hanbo'
+__version__=='0.0.1'
 
-global datapath
-datapath=_os.path.join(_os.path.dirname(__file__), 'database')
+#global datapath
+#datapath=_os.path.join(_os.path.dirname(__file__), 'database')
 
 
-from stock import financials, analysis, profile, prices
+from .stock import financials, analysis, profile, prices
+from .stock.profile import description as desc
 
-from basics.stocks import stock_list
+from .basics.stocks import stock_list
 
-from factors.factors import get_factors
+from .factors.factors import get_factors
 
-from operations.Save import save # done
-from operations.Count import database_count
-from operations.Open import open_file
+from .operations.Save import save # done
+from .operations.Count import database_count
+from .operations.Open import open_file
 
 #from operations.Open import open_file, open_general
 
@@ -26,10 +27,10 @@ from operations.Open import open_file
 
 # calculation.key.Beta is not done
 
-import calculation
-from get import update, getLastUpdate, main_get # Connected well
+from .calculation import *
+from .get import update, getLastUpdate, main_get # Connected well
 
-from operations.Path import path # not tested
+from .operations.Path import path # not tested
 
 if len(_os.listdir(datapath))-2<100:
     raise Warning("There is not sufficient data in the database. Use main_get() to retrieve data")

@@ -1,8 +1,5 @@
-import sys as _sys
-_sys.path.append('..') # add previous directory to model object
-
-from operations.Format import factor as _factor
-from operations.Open import open_file as _open_file
+from ..operations.Format import factor as _factor
+from ..operations.Open import open_file as _open_file
 
 
 class income:

@@ -5,12 +5,9 @@ import numpy as _np
 from collections import Iterable as _iter
 
 
-import sys as _sys
-_sys.path.append('..') # add previous directory to model object
-
-from operations.Open import open_file as _open_file
-from operations.Path import path as _path
-from operations.Format import factor as _factor
+from ..operations.Open import open_file as _open_file
+from ..operations.Path import path as _path
+from ..operations.Format import factor as _factor
 
 
 def get_factors(companies, factors, year='NEWEST'):

@@ -2,10 +2,8 @@ import pandas as _pd
 
 import math as _math
 
-import sys as _sys
-_sys.path.append('..') # add previous directory to model object
 
-from operations.Open import open_file as _open_file
+from ..operations.Open import open_file as _open_file
 
 
 def stats(stock):
