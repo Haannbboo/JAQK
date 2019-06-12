@@ -1,5 +1,5 @@
 from ..operations.Format import factor as _factor
-from ..operation.Open import open_file as _open_file
+from ..operations.Open import open_file as _open_file
 
 # These are quite important and popular factors, so I list them out
 # so my client can use it like ROE-ROA, instead of factor(ROE)-factor(ROA), which is quite werid

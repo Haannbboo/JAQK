@@ -11,7 +11,7 @@ def stats(stock):
     stock - a company's code (eg. AAPL)
     returns a csv sheet with all statistics in yahoo finance for the company
     '''
-    try：
+    try:
         a=Valuation_Measures(stock)
         b=Financial_Highlights(stock)
         c=Trading_Information(stock)

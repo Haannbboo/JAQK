@@ -1,11 +1,11 @@
 import os as _os
 
 
-__author__=='Hanbo'
-__version__=='0.0.1'
+#__author__=='Hanbo'
+#__version__=='0.0.1'
 
 #global datapath
-#datapath=_os.path.join(_os.path.dirname(__file__), 'database')
+datapath=_os.path.join(_os.path.dirname(__file__), 'database')
 
 
 from .stock import financials, analysis, profile, prices
@@ -33,7 +33,7 @@ from .get import update, getLastUpdate, main_get # Connected well
 from .operations.Path import path # not tested
 
 if len(_os.listdir(datapath))-2<100:
-    raise Warning("There is not sufficient data in the database. Use main_get() to retrieve data")
+    print("There is not sufficient data in the database. Use main_get() to retrieve data")
 
 
 

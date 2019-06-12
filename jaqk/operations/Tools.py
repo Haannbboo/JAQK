@@ -65,7 +65,7 @@ def code_count():
     path=_os.path.abspath('../')
     dirs=_os.listdir(path)
     dirs=[i for i in dirs if 'database' not in i] # get rid of database stuff
-    dirs.remove('__pycache__')
+    #dirs.remove('__pycache__')
     count={}
 
     for d in dirs:

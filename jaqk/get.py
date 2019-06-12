@@ -14,16 +14,16 @@ import aiohttp
 import gc
 
 # Internal modules
-from basics.stocks import *
+from .basics.stocks import stock_list
 
 
-from getters.get_holders import get_major_holders, get_top_institutional_and_mutual_fund_holders
-from getters.get_financials import get_stats, get_statements, get_reports
-from getters.get_profile import get_executives, get_description
-from getters.get_analysis import get_analysis
-from getters.get_summary import get_summary
-from operations.Save import save_file, save_dfs, save_analysis
-from operations.Folder import create_folder, exist
+from .getters.get_holders import get_major_holders, get_top_institutional_and_mutual_fund_holders
+from .getters.get_financials import get_stats, get_statements, get_reports
+from .getters.get_profile import get_executives, get_description
+from .getters.get_analysis import get_analysis
+from .getters.get_summary import get_summary
+from .operations.Save import save_file, save_dfs, save_analysis
+from .operations.Folder import create_folder, exist
 
 
 # url='https://finance.yahoo.com/quote/BABA/analysis?p=BABA'
@@ -234,7 +234,8 @@ def main_get(stocks='ALL', batch=32):
     stocks - str - default ALL, can be either NYSE or NASDAQ
     batch - default 32, batch size for loop (recommend to change based on interest status)
     '''
-    if stocks not in ['NYSE','NASDAQ','ALL']
+    if stocks not in ['NYSE','NASDAQ','ALL']:
+        raise ValueError("Parameter 'stocks' should be one of NYSE, NASDAQ, and ALL")
     main(stocks='NYSE', batch=batch)
     print("Updated NYSE data")
     main(stocks='NASDAQ', batch=batch)
