@@ -56,7 +56,7 @@ async def getter(url, timeout=20, error=True, proxy=None, cnt=0):
         error = False
     except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout):
         # bug in catcher
-        #print("Exception in MAIN GETTET: "+str(e))
+        # print("Exception in MAIN GETTET: "+str(e)) # all clean now
         error = True
     if error == False:
         return html
@@ -75,67 +75,92 @@ async def parse(c, names, update=False, save_mode='w'):
             'https://finance.yahoo.com/quote/' + c + '?p=' + c]
 
     try:
-
+        # get summary needs changes - handle NAN
+        # needs bug recorder
         create_folder(c)
         if not exist(c, 'Summary', update):
-            html = await getter(urls[7])
-            # input("Press enter to continue")
-            save_file(get_summary(html, c), c, 'Summary', update)
-            # print("Saved summary")
-            # input("Press enter to continue")
-            del html
-            await asyncio.sleep(0.27)
+            try:
+                html = await getter(urls[7])
+                # input("Press enter to continue")
+                save_file(get_summary(html, c), c, 'Summary', update)
+                # print("Saved summary")
+                # input("Press enter to continue")
+                del html
+                await asyncio.sleep(0.27)
+            except Exception:
+                pass
         if not exist(c, names[3:6], update):
-            html = await getter(urls[4])
-            save_dfs(get_stats(html), c, names[3:6])
-            # print("Saved statistics")
-            # input("Press enter to continue")
-            del html
-            await asyncio.sleep(0.27)
+            try:
+                html = await getter(urls[4])
+                save_dfs(get_stats(html), c, names[3:6])
+                # print("Saved statistics")
+                # input("Press enter to continue")
+                del html
+                await asyncio.sleep(0.27)
+            except Exception:
+                pass
         if not exist(c, names[0:3], update):
-            html = await getter(urls[0])
-            save_file(get_major_holders(html), c, names[0], update)
-            save_dfs(get_top_institutional_and_mutual_fund_holders(html), c,
-                     [names[1], names[2]])
-            # print("Saved holders")
-            # input("Press enter to continue")
-            del html
-            await asyncio.sleep(0.27)
+            try:
+                html = await getter(urls[0])
+                save_file(get_major_holders(html), c, names[0], update)
+                save_dfs(get_top_institutional_and_mutual_fund_holders(html), c,
+                         [names[1], names[2]])
+                # print("Saved holders")
+                # input("Press enter to continue")
+                del html
+                await asyncio.sleep(0.27)
+            except Exception:
+                pass
         if not exist(c, names[6:8], update):
-            html = await getter(urls[5])
-            save_dfs([get_executives(html), get_description(html)], c, names[6:8])
-            # print("Saved executives and description")
-            # input("Press enter to continue")
-            del html
-            await asyncio.sleep(0.07)
+            try:
+                html = await getter(urls[5])
+                save_dfs([get_executives(html), get_description(html)], c, names[6:8])
+                # print("Saved executives and description")
+                # input("Press enter to continue")
+                del html
+                await asyncio.sleep(0.27)
+            except Exception:
+                pass
         if not exist(c, names[8:14], update):
-            html = await getter(urls[6])
-            save_analysis(get_analysis(html), c)
-            # print("Saved analysis")
-            # input("Press enter to continue")
-            del html
-            await asyncio.sleep(0.27)
+            try:
+                html = await getter(urls[6])
+                save_analysis(get_analysis(html), c)
+                # print("Saved analysis")
+                # input("Press enter to continue")
+                del html
+                await asyncio.sleep(0.27)
+            except Exception:
+                pass
         if not exist(c, 'income', update):
-            html = await getter(urls[1])
-            save_file(get_reports(html), c, 'income', update)
-            # print("Saved income statement")
-            # input("Press enter to continue")
-            del html
-            await asyncio.sleep(0.27)
+            try:
+                html = await getter(urls[1])
+                save_file(get_reports(html), c, 'income', update)
+                # print("Saved income statement")
+                # input("Press enter to continue")
+                del html
+                await asyncio.sleep(0.27)
+            except Exception:
+                pass
         if not exist(c, 'balance', update):
-            html = await getter(urls[2])
-            save_file(get_reports(html), c, 'balance', update)
-            # print("Saved balance sheet")
-            # input("Press enter to continue")
-            del html
-            await asyncio.sleep(0.27)
+            try:
+                html = await getter(urls[2])
+                save_file(get_reports(html), c, 'balance', update)
+                # print("Saved balance sheet")
+                # input("Press enter to continue")
+                del html
+                await asyncio.sleep(0.27)
+            except Exception:
+                pass
         if not exist(c, 'cash_flow', update):
-            html = await getter(urls[3])
-            save_file(get_reports(html), c, 'cash_flow', update)
-            # print("Saved cash flow statement")
-            # input("Press enter to continue")
-            del html
-            await asyncio.sleep(0.27)
+            try:
+                html = await getter(urls[3])
+                save_file(get_reports(html), c, 'cash_flow', update)
+                # print("Saved cash flow statement")
+                # input("Press enter to continue")
+                del html
+                await asyncio.sleep(0.27)
+            except Exception:
+                pass
         # print("All saved for "+c)
     except Exception as e:
         bug = [[c, e]]
@@ -155,7 +180,7 @@ def main(stocks='NYSE', update=False, batch=64):
     '''
     if stocks in ['NYSE', 'NASDAQ']: # load all stocks
         stocks = get_all_stocks(stocks)
-    #stocks=stocks[0:batch]
+    assert isinstance(stocks, list)
     # stocks=['BABA'] #for testing
     # s=['BABA','AAPL','AMZN','JD','BIDU','WB','WFC','C','JPM','DPZ','BA','CVX','LUV'] # for sample testing
     NAMES = ['major_holders', 'top_institutional_holders', 'top_mutual_fund_holders',
@@ -176,10 +201,11 @@ def main(stocks='NYSE', update=False, batch=64):
         loop.run_until_complete(asyncio.wait(tasks))
         t2 = time.time()
         print(str(i + batch) + "/" + str(len(stocks)) + " - Total Time: " + str(t2 - t1) + 's')
-        input("Cut point check")
+        #input("Cut point check")
 
 # main()
-def _speedtest():
+'''
+def _speedtestf():
     import shutil
     stock='NYSE'
     t=[]
@@ -200,6 +226,7 @@ def _speedtest():
         gc.collect()
         time.sleep(1)
     return t
+'''
 
 def main_get(stocks='ALL', batch=128):
     '''
