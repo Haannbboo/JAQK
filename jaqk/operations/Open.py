@@ -15,8 +15,7 @@ def open_file(stock, name):
     '''
     opener for opening sheets for client
     stock - company name (e.g AAPL for apple inc.)
-    name - name of the sheet (e.g 'income' / 'balace')
-    use names() to see all names
+    name - name of the sheet (e.g 'income' / 'balace'), use sheets_names() to see all names
     returns a csv sheet of the sheet of the company
     '''
     # datapath='/Users/hanbo/Desktop/ML/QA/JAQK/database/'
