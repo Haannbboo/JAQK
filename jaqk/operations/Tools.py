@@ -55,3 +55,50 @@ def sheets_names():
              'Executives', 'Description', 'analysis', 'Summary',
              'balance', 'cash_flow', 'income']
     return names
+
+
+def code_count():
+    '''
+    prints out some of the information of the this package
+    '''
+    
+    path=_os.path.abspath('../')
+    dirs=_os.listdir(path)
+    dirs=[i for i in dirs if 'database' not in i] # get rid of database stuff
+    dirs.remove('__pycache__')
+    count={}
+
+    for d in dirs:
+        cnt=0
+        if '.py' in d:
+            f=open(_os.path.join(path, d), mode='r')
+            while True: # reduce memory usage
+                try:
+                    line=f.readline()
+                except UnicodeDecodeError:
+                    cnt+=1
+                    continue
+                if not line:
+                    break
+                else:
+                    cnt+=1
+            f.close()
+        elif _os.path.isdir(_os.path.join(path, d)):
+            for dd in _os.listdir(_os.path.join(path, d)):
+                if '.py' in dd:
+                    f=open(_os.path.join(path, d, dd), mode='r')
+                    while True: # reduce memory usage
+                        try:
+                            line=f.readline()
+                        except UnicodeDecodeError:
+                            cnt+=1
+                            continue
+                        if not line:
+                            break
+                        else:
+                            cnt+=1
+                    f.close()
+        if cnt!=0:
+            count[d]=cnt
+    return sum(count.values())
+    
