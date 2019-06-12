@@ -6,25 +6,29 @@ global datapath
 datapath = os.path.join(p, 'database')
 
 
-def save_file(df, stock, name):
+def save_file(df, stock, name, update=False):
     path = os.path.join(datapath, stock, stock) + '_' + name + '.csv'
-    try:
-        d = _pd.read_csv(path)
-        d = d[list(d)[1:]]
-    except FileNotFoundError:
-        d = _pd.DataFrame()
-    try:
-        df = _pd.concat([df, d], axis=1)
-        df = df.loc[:, ~df.columns.duplicated()]  # Drop duplicated column
-    except Exception as e:
-        print("Exception in save_file: " + str(e))
-    try:
-        columns_title = list(df)[1:]
-        columns_title.sort(key=lambda x: x.split('/')[-1:-3:-1], reverse=True)  # Sort index by Y & M
-        columns_title.insert(0, 'Statements')
-        df = df.reindex(columns=columns_title)  # Swap columns
-    except Exception as e:
-        print("Exception in save_file: " + str(e))
+
+    if not update:
+        pass
+    elif update:
+        try:
+            d = _pd.read_csv(path)
+            d = d[list(d)[1:]]
+        except FileNotFoundError:
+            d = _pd.DataFrame()
+        try:
+            df = _pd.concat([df, d], axis=1)
+            df = df.loc[:, ~df.columns.duplicated()]  # Drop duplicated column
+        except Exception as e:
+            print("Exception in save_file: " + str(e))
+        try:
+            columns_title = list(df)[1:]
+            columns_title.sort(key=lambda x: x.split('/')[-1:-3:-1], reverse=True)  # Sort index by Y & M
+            columns_title.insert(0, 'Statements')
+            df = df.reindex(columns=columns_title)  # Swap columns
+        except Exception as e:
+            print("Exception in save_file: " + str(e))
     df.to_csv(path, index=False)
 
 
