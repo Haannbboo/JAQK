@@ -13,6 +13,8 @@ jaqk/basics/__init__.py
 jaqk/basics/stocks.py
 jaqk/calculations/__init__.py
 jaqk/calculations/rank.py
+jaqk/database/__init__.py
+jaqk/database_test/__init__.py
 jaqk/factors/__init__.py
 jaqk/factors/balance.py
 jaqk/factors/cash_flow.py
@@ -36,6 +38,10 @@ jaqk/operations/Save.py
 jaqk/operations/Tools.py
 jaqk/operations/Trans.py
 jaqk/operations/__init__.py
+jaqk/proxies/__init__.py
+jaqk/proxies/get_proxies.py
+jaqk/proxies/proxies.py
+jaqk/proxies/proxy_loader.py
 jaqk/stock/__init__.py
 jaqk/stock/analysis.py
 jaqk/stock/financials.py
