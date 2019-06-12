@@ -1,5 +1,6 @@
 # Welcome to JAQK financial report package
 > A light and useful toolkit developed for financial report getter and basic analysis and calculations.
+
 > It starts with an assignment, proceeds with deadlines, and grows with passions. - Hanbo Guo
 
 _Author: Hanbo Guo_
