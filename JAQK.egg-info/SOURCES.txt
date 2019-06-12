@@ -28,12 +28,12 @@ jaqk/getters/get_profile.py
 jaqk/getters/get_summary.py
 jaqk/getters/get_trading.py
 jaqk/getters/getter.py
-jaqk/operations/Count.py
 jaqk/operations/Folder.py
 jaqk/operations/Format.py
 jaqk/operations/Open.py
 jaqk/operations/Path.py
 jaqk/operations/Save.py
+jaqk/operations/Tools.py
 jaqk/operations/Trans.py
 jaqk/operations/__init__.py
 jaqk/stock/__init__.py

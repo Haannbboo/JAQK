@@ -1,13 +1,13 @@
-import numpy as np
+import numpy as _np
 import re
 
 
 def _decimal(array):  # eliminate ',' in numbers
-    d = np.vectorize(lambda x: float(re.compile(',').sub('', x)))
+    d = _np.vectorize(lambda x: float(re.compile(',').sub('', x)))
     return d(array)
 
 
-def money_digits(array):
+def money_digits(array): # not done, probably not useful
     digits = [i[-1] for i in array]
     d = '|'.join([str(i in ['B', 'M', 'K']) for i in digits])
     t = {'B': 1000000000, 'M': 1000000, 'K': 1000}
@@ -29,9 +29,9 @@ def factor(df, factor, year=True):
     elif isinstance(factor, list):
 
         if year == True:
-            f = _decimal(np.array([d[1:] for d in df[df['Statements'].isin(factor)].values]))
+            f = _decimal(_np.array([d[1:] for d in df[df['Statements'].isin(factor)].values]))
         elif year == 'NEWEST':  # multiple factors with the newest year
-            f = _decimal(np.array([[d[1] for d in df[df['Statements'].isin(factor)].values]]))
+            f = _decimal(_np.array([[d[1] for d in df[df['Statements'].isin(factor)].values]]))
         else:
             temp = lambda x, y: [i for j in x for i in y if str(j) in i]
             years = temp(year, list(df))

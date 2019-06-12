@@ -5,12 +5,9 @@ import numpy as _np
 from collections import Iterable as _iter
 
 
-import sys as _sys
-_sys.path.append('..') # add previous directory to model object
-
-from operations.Open import open_file as _open_file
-from operations.Path import path as _path
-from operations.Format import factor as _factor
+from ..operations.Open import open_file as _open_file
+from ..operations.Path import path as _path
+from ..operations.Format import factor as _factor
 
 
 def get_factors(companies, factors, year='NEWEST'):
@@ -68,7 +65,7 @@ def get_factors(companies, factors, year='NEWEST'):
         
 
 
-    
+''' for debugging
 factors=['Net Income','Total Assets','Total Revenue','Gross Profit']
 paths = [_path(f) for f in factors]
 d={}
@@ -78,3 +75,4 @@ for i in range(len(paths)):  # Avoid crowded IO
     else:
         d[paths[i]] += [factors[i]]
 df=_open_file('AAPL','income')
+'''
