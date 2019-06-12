@@ -1,5 +1,6 @@
 # Welcome to JAQK financial report package
 > A light and useful toolkit developed for financial report getter and basic analysis and calculations.
+> It starts with an assignment, proceeds with deadlines, and grows with passions. - Hanbo Guo
 
 _Author: Hanbo Guo_
 
@@ -25,7 +26,7 @@ pip install JAQK --upgrade
 ```
 You can also set up the package after downloading the package from this site:
 ```sh
-# setup
+# install after downloading
 python setup.py install
 ```
 
@@ -39,9 +40,11 @@ python setup.py install
 - For data processing
   - [pandas](http://pandas.pydata.org/ "pandas")
   - [numpy](http://www.numpy.org)
+- Other necessary
+  - [pysimplegui](https://pysimplegui.readthedocs.io/en/latest/)
   
 ## Documentation
-The official documentation is hosted by [github.io]()
+The official documentation is hosted by [github.io]().
   
 ## Getting help
 For usage questions, the best place to go to is [StackOverflow](https://stackoverflow.com/questions/tagged/JAQK);
@@ -51,5 +54,5 @@ If you have any detailed question about the plan/design/develop of this tookit, 
 
 ## Previous Updates
 
-All changes (pushes) have been recorded [here](). Click for more details
+All changes (pushes) have been recorded [here](https://github.com/Haannbboo/JAQK/blob/master/jaqk/HISVERSION.md). Click for more details.
   
