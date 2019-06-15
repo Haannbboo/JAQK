@@ -1,6 +1,6 @@
 ## Historical Version for JAQK package
 
-> Everything written are worth recording. They're stamps of growth, maturity, and development. Hope this will become part of memory...
+> Everything written are worth recording. They're stamps of growth, maturity, and development. Hope this will become part of memory... - Hanbo Guo
 
 #### 0.0.1 Frist update
 - 12am, Jun.10th: Clone to Github
@@ -14,3 +14,4 @@
 - 9pm, Jun.12th: Add client function: code_count()
 ##### 0.0.2.1 Jun.13th 2019
 - 8am, Jun.13th: Update to reduce bug for PyPi import
+- 4pm, Jun.15th: Add unittests to basics, operations, stocks, factors, calculation; other minor changes to pass the unittest
