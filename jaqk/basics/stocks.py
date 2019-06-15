@@ -9,7 +9,7 @@ def stock_list(exchange=True):
     exchange - str - default True (all), either NYSE or NASDAQ
     returns a csv sheet with all statistics in yahoo finance for the company
     '''
-    if exchange not in ['NYSE', 'NASDAQ']:
+    if exchange not in ['NYSE', 'NASDAQ'] and exchange!=True:
         raise ValueError("Parameter 'exchange' should either NYSE or NASDAQ")
     if exchange:
         c1=_open_general('NASDAQ.csv')

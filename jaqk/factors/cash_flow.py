@@ -17,7 +17,7 @@ def FCF(stock): # Cash flow
 
 
 
-
+'''
 class cash_flow():
     def __init__(self,stock):
         self.__stock=stock
@@ -32,3 +32,4 @@ class cash_flow():
         return _factor(self.__df, 'Depreciation')
     def Net_Borrowings(self):
         return _factor(self.__df, 'Net Borrowings')
+'''

@@ -3,6 +3,10 @@ import re
 
 
 def _decimal(array):  # eliminate ',' in numbers
+    for i in range(len(array)):
+        temp = array[i]
+        if isinstance(temp, _np.ndarray) and '-' in temp:
+            array[i]=_np.array(['0']*len(temp)) # must be array[i]
     d = _np.vectorize(lambda x: float(re.compile(',').sub('', x)))
     return d(array)
 
@@ -19,13 +23,17 @@ def money_digits(array): # not done, probably not useful
 
 def factor(df, factor, year=True):
     # dimensions of f are different for 'factor' and ['factor']
+    if len(df)>5 and ('2018' not in ''.join(list(df))) and year!=True:
+        raise ValueError("Parameter year can only be used when factor is in non-financial sheets")
     if isinstance(factor, str):
         if year == True:  # all years
             f = _decimal(df[df['Statements'].isin([factor])].values[0][1:])
+        elif year == 'NEWEST':
+            f = _decimal(_np.array([d[1] for d in df[df['Statements'].isin([factor])].values]))
         else:  # single factor with specified years
             temp = lambda x, y: [i for j in x for i in y if str(j) in i]  # map 2016 to '9/26/2016'
             years = temp(year, list(df))
-            f = _decimal(df.loc[df.Statements == factor, years])
+            f = _decimal(df.loc[df.Statements == factor, years].values)
     elif isinstance(factor, list):
 
         if year == True:

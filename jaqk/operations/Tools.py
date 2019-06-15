@@ -3,6 +3,7 @@ import gc as _gc
 import pandas as _pd
 import numpy as _np
 
+global p
 p = _os.path.abspath(_os.path.join(_os.path.dirname(__file__), _os.pardir))
 global datapath
 datapath = _os.path.join(p, 'database')
@@ -26,8 +27,10 @@ def database_count():
         
 def factors_names(sheet=None):
     if sheet is None:
-        dfs=(_pd.read_csv(_os.path.join(datapath, 'AAPL', c)) for c in _os.listdir(_os.path.join(datapath, 'AAPL'))) # generator
-        r=[df.iloc[0:-1,0].values[1:] for df in dfs]
+        files = _os.listdir(_os.path.join(datapath, 'AAPL'))
+
+        dfs=(_pd.read_csv(_os.path.join(datapath, 'AAPL', c)) for c in files) # generator
+        r=[df.iloc[0:,0].values[1:] for df in dfs if len(df)<48]
         r=[i.tolist()[j] for i in r for j in range(len(i.tolist()))]+list(_pd.read_csv(_os.path.join(datapath, 'AAPL', 'AAPL_Summary.csv')))[1:]
         r=_np.array(r, dtype='str')
     else:
@@ -57,20 +60,25 @@ def sheets_names():
     return names
 
 
-def code_count():
+def code_count(what='lines', detail=False):
     '''
     prints out some of the information of the this package
+    what - str - count what, default output everything - supporting -> lines, defs, chars
+    detail - True / False - whether return count for each file or not
     '''
-    
-    path=_os.path.abspath('../')
+    path=p
     dirs=_os.listdir(path)
     dirs=[i for i in dirs if 'database' not in i] # get rid of database stuff
     #dirs.remove('__pycache__')
     count={}
-
+    count_def={}
+    count_char={}
+    
     for d in dirs:
         cnt=0
-        if '.py' in d:
+        cnt_def=0
+        cnt_char=0
+        if '.py' in d and ('pyc' not in d):
             f=open(_os.path.join(path, d), mode='r')
             while True: # reduce memory usage
                 try:
@@ -82,6 +90,9 @@ def code_count():
                     break
                 else:
                     cnt+=1
+                    cnt_def+=line.count('def')
+                    cnt_char+=len(line)
+                    
             f.close()
         elif _os.path.isdir(_os.path.join(path, d)):
             for dd in _os.listdir(_os.path.join(path, d)):
@@ -97,8 +108,31 @@ def code_count():
                             break
                         else:
                             cnt+=1
+                            cnt_def+=line.count('def')
+                            cnt_char+=len(line)
                     f.close()
         if cnt!=0:
             count[d]=cnt
-    return sum(count.values())
+        if cnt_def!=0:
+            count_def[d]=cnt_def
+        if cnt_char!=0:
+            count_char[d]=cnt_char
+
+            
+    if what== 'lines':
+        if detail:
+            return count
+        else:
+            return sum(count.values()) 
+    if what=='defs':
+        if detail:
+            return count_def
+        else:
+            return sum(count_def.values())
+    if what=='chars':
+        if detail:
+            return count_char
+        else:
+            return sum(count_char.values())
+    
     

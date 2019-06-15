@@ -1,4 +1,5 @@
 import os as _os
+import gc as _gc
 
 
 #__author__=='Hanbo'
@@ -9,6 +10,7 @@ datapath=_os.path.join(_os.path.dirname(__file__), 'database')
 
 
 from .stock import financials, analysis, profile, prices
+#from .stock import financials
 from .stock.profile import description as desc
 
 from .basics.stocks import stock_list
@@ -32,12 +34,17 @@ from .get import update, getLastUpdate, main_get # Connected well
 
 from .operations.Path import path # not tested
 
+
+from .test2 import test
+
+
+
 if len(_os.listdir(datapath))-2<100:
     print("There is not sufficient data in the database. Use main_get() to retrieve data")
 
-
-
-class test:
+_gc.collect()
+'''
+class tttest:
     # Not supporting deliberate handlers of errors
     def __init__(self,stock):
         self.stock=stock
@@ -80,4 +87,4 @@ class test:
         assert len(list(df))==9
     def test_calculation(self):
         pass
-    
+'''    

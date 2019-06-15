@@ -10,7 +10,8 @@ def path(factor):
     # Still in abs path, need changes
     p=_os.path.abspath(_os.path.join(_os.path.dirname(__file__),_os.pardir))
     path=_os.path.join(p,'database')
-    
+    if factor in ['price_daily', 'price_monthly', 'price_weekly']:
+        return factor
     balance=set(_pd.read_csv(path+'/AAPL/AAPL_balance.csv')['Statements'].tolist())
     if factor in balance:
         return 'balance'

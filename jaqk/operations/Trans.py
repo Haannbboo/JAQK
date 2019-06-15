@@ -19,7 +19,7 @@ def _t_util(text, t, f):
     r_url = url + '?q=' + urllib.parse.quote(text) + '&from=' + f + '&to=' + t + '&appid=' + app_id + '&salt=' + str(
         salt) + '&sign=' + sign
 
-    r = requests.get(r_url).content.decode('utf-8')
+    r = requests.get(r_url, timeout=7).content.decode('utf-8')
     data = json.loads(r)
     result = str(data['trans_result'][0]['dst'])
 

@@ -21,8 +21,10 @@ def factor_percentile(Factor,stock):
     stock - company you want to check
     returns the percentile of the factor of the stock - a list of floats
     '''
-    if not isinstance(Factor,str):
-        raise TypeError("Parameters 'factors' should a string")
+    if not isinstance(Factor, str):
+        raise TypeError("Parameter 'factors' should a string")
+    if not isinstance(stock, str):
+        raise TypeError("Parameter 'stock' should a string")
     p0=_os.path.abspath(_os.path.join(_os.path.dirname(__file__),_os.pardir))
     p=_os.path.join(p0,'database')
     name=_path(Factor)
@@ -55,7 +57,11 @@ def percentile(Factor, percentage=80):
     returns a list of companies with top percentile for the factor
     '''
     if not isinstance(Factor,str):
-        raise TypeError("Parameters 'factors' should a string")
+        raise TypeError("Parameter 'factors' should a string")
+    if not isinstance(percentage, int):
+        raise TypeError("Parameter 'percentage' should a int")
+    elif not 0<=percentage<=100:
+        raise ValueError("Parameter 'percentage' should be between 0-100")
     p=_os.path.join(_os.path.abspath(_os.path.join(_os.path.dirname(__file__),_os.pardir)),'database')
     flag=False # flag for using external factors
     try:
