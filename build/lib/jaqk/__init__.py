@@ -24,7 +24,7 @@ from .operations.Open import open_file
 # calculation.key.Beta is not done
 
 from .calculation import *
-from .get import update, getLastUpdate, main_get  # Connected well
+from .get import update, getLastUpdate, main_get, load_stock_list
 
 from .operations.Path import path  # not tested
 

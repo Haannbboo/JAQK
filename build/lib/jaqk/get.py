@@ -1,16 +1,16 @@
 import requests
 from pyquery import PyQuery as pq
-import pandas as pd
+import pandas as _pd
 # import re
 import time
-import datetime
-import os
+import datetime as _dtime
+import os as _os
 
 # asynchronous coroutine
 import asyncio
 import aiohttp
 
-# memory
+# memory cleaning
 import gc as _gc
 
 # Internal modules
@@ -21,13 +21,13 @@ from .getters.get_financials import get_stats, get_statements, get_reports
 from .getters.get_profile import get_executives, get_description
 from .getters.get_analysis import get_analysis
 from .getters.get_summary import get_summary
-from .operations.Save import save_file, save_dfs, save_analysis
+
+from .operations.Save import save_file, save_dfs, save_analysis, datapath  # helpful operations
 from .operations.Folder import create_folder, exist
 
+global main_path
+main_path = _os.path.abspath(_os.path.dirname(__file__))
 
-# url='https://finance.yahoo.com/quote/BABA/analysis?p=BABA'
-# html=getter(url)
-# df1,df2=top_institutional_and_mutual_fund_holders(html)
 
 async def getter(url, timeout=20, error=True, proxy=None, cnt=0):
     # main get function for all the website getter
@@ -36,7 +36,7 @@ async def getter(url, timeout=20, error=True, proxy=None, cnt=0):
     url - target url
     timeout - default 10 second (recommend >10)
     error - Recursive error handler
-    proxy - connnect to proxies, should be a dic containing both http/https proxies
+    proxy - connect to proxies, should be a dic containing both http/https proxies
     """
     if cnt == 1:
         return
@@ -204,7 +204,6 @@ def main(stocks='NYSE', update=False, batch=64):
         # input("Cut point check")
 
 
-# main()
 '''
 def _speedtestf():
     import shutil
@@ -233,27 +232,38 @@ def _speedtestf():
 def main_get(stocks='ALL', batch=32):
     """
     Main getter for client, MUST be runned after installation of the package (default update all stocks in NYSE and NASDAQ)
-    stocks - str - default ALL, can be either NYSE or NASDAQ
+    stocks - str - default ALL, can be NYSE, NASDAQ, list of ticket, load_stock_list() (for client only)
     batch - default 32, batch size for loop (recommend to change based on interest status)
     """
     if stocks not in ['NYSE', 'NASDAQ', 'ALL']:
-        raise ValueError("Parameter 'stocks' should be one of NYSE, NASDAQ, and ALL")
-    main(stocks='NYSE', batch=batch)
-    print("Updated NYSE data")
-    main(stocks='NASDAQ', batch=batch)
-    print("Updated NASDAQ data")
+        if isinstance(stocks, str):
+            t = type(stocks)
+            if len(stocks) > 10:
+                stocks = str(stocks[0:4] + ['......'] + stocks[-2:])
+            raise ValueError("Parameter 'stocks' should be one of NYSE, NASDAQ, and ALL, not {} object: {}"
+                             .format(t.__name__, str(stocks)))
+    if stocks == 'ALL':
+        main(stocks='NYSE', batch=batch)
+        print("Updated NYSE data")
+        main(stocks='NASDAQ', batch=batch)
+        print("Updated NASDAQ data")
+    else:
+        main(stocks=stocks, batch=batch)
+        if len(stocks) > 10:
+            stocks = str(stocks[0:4] + ['......'] + stocks[-2:])
+        print("Updated all data for" + str(stocks))
 
 
 def _getBetweenDay(begin_date):  # tested
     # Got from csdn.com, minor changes have made
-    begin_date = datetime.datetime.strptime(begin_date, "%Y-%m-%d") + datetime.timedelta(days=1)
+    begin_date = _dtime.datetime.strptime(begin_date, "%Y-%m-%d") + _dtime.timedelta(days=1)
     today = time.strftime('%Y-%m-%d', time.localtime(time.time()))
-    end_date = datetime.datetime.strptime(today, "%Y-%m-%d")
+    end_date = _dtime.datetime.strptime(today, "%Y-%m-%d")
     print("Current date: " + today)
     while begin_date <= end_date:  # doesn't include today
         date_str = begin_date.strftime("%Y-%m-%d")
         yield date_str  # to reduce memory usage
-        begin_date += datetime.timedelta(days=1)
+        begin_date += _dtime.timedelta(days=1)
 
 
 def getLastUpdate():  # get last update date of the database
@@ -262,7 +272,7 @@ def getLastUpdate():  # get last update date of the database
     get last update time
     prints out the date and returns the date(str)
     """
-    last_update = open('datefile.txt').readlines()[0]
+    last_update = open(_os.path.join(main_path, 'datefile.txt')).readlines()[0]
     print("Last update time: " + last_update)
     return last_update
 
@@ -273,7 +283,7 @@ async def update_getter(day):  # util
     updates = [i.text()
                for i in pq(html)('.simpTblRow a').items()
                ]
-    df = pd.DataFrame(updates)
+    df = _pd.DataFrame(updates)
     df.to_csv('dates_temp.csv', mode='a', header=False)  # csv as a tranducer
 
 
@@ -293,7 +303,7 @@ def update_all_days():
 
     # input('Cut-point check') # for checking
     # df.tolist() is depreciated... use df.values.tolist() instead
-    updates = pd.read_csv('dates_temp.csv', index_col=0).values.tolist()  # read dates
+    updates = _pd.read_csv('dates_temp.csv', index_col=0).values.tolist()  # read dates
     updates = set([i[j] for i in updates for j in range(len(i))])  # for set operation AND
     needs_update_list = list(updates.intersection(stocksss))
     company_list_length = len(needs_update_list)
@@ -313,10 +323,10 @@ def update():
     this automatically catches days and companies need to be updated, and update
     recommend to update every day
     """
-    df = pd.DataFrame()
+    df = _pd.DataFrame()
     df.to_csv('dates_temp.csv')  # clear up cache
     global stocksss
-    stocksss = set(os.listdir('./database'))  # set of stocks in database
+    stocksss = set(_os.listdir(datapath))  # set of stocks in database
     last_update = getLastUpdate()
     days = _getBetweenDay(last_update)
     tasks = [asyncio.ensure_future(update_stock_list(day)) for day in days]  # async calling
@@ -327,3 +337,27 @@ def update():
     #    with open('datefile.txt', mode='w') as d:
     #        d.write(time.strftime('%Y-%m-%d', time.localtime(time.time())))
     print("Update completed")
+
+
+def load_stock_list():
+    """
+    for specific stock_list only (client's stock list: KWHS Investment Competition Approved Securities)
+    """
+    import PySimpleGUI as sg
+    form_rows = [[sg.Text('Choose the excel path')],
+                 [sg.Text('Choose path: ', size=(15, 1)), sg.InputText(key='Choose'),
+                  sg.FileBrowse(file_types=(('Excel Spreadsheet', '*.xlsx'), ('Excel Spreadsheet', '*.xls')))],
+                 [sg.Submit(), sg.Cancel()]]
+    window = sg.Window('Choose excel from path')
+    _, values = window.Layout(form_rows).Read()
+    window.Close()
+    path = values['Choose']  # file path chosen
+
+    import openpyxl as xl
+    wb = xl.load_workbook(path)
+    sheet_names = wb.get_sheet_names()  # openpyxl for getting all sheet_names
+
+    r = [_pd.read_excel(path, i)['TICKER'].tolist() for i in
+         sheet_names]  # header of stocks is TICKER in client's stock list
+    r = [i[j] for i in r for j in range(len(i))]
+    return r
