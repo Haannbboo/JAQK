@@ -16,8 +16,7 @@ def install_requirements():
         'pyquery>=1.4.0',
         'aiohttp>=3.4.0',
         'PySimpleGUI>=3.0.0',
-        'scipy>=1.0.0',
-        'unittest>=3.1'
+        'scipy>=1.0.0'
         ]
     return reqs
         

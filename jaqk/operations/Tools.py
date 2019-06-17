@@ -22,6 +22,28 @@ def database_count():
     _gc.collect()
 
 
+def database_clear():
+    """
+    clear all data in database (use cautiously)
+    """
+    files = (i for i in _os.listdir(datapath))
+    for f in files: # file name
+        if f not in ['__init__.py', 'AAPL', 'AMZN', 'general', 'test']:
+            _os.remove(f)
+    f2 = _os.listdir(datapath)
+    assert len(f2)<6
+    print("Sucessfully clear all data in database")
+
+
+def database_reset():
+    """
+    reset database to the original state
+    automatically save the past database to database_cache
+    """
+    pass
+    
+
+
 def factors_names(sheet=None):
     if sheet is None:
         files = _os.listdir(_os.path.join(datapath, 'AAPL'))
@@ -55,6 +77,7 @@ def sheets_names():
              'stats', 'statements', 'reports',
              'Executives', 'Description', 'analysis', 'Summary',
              'balance', 'cash_flow', 'income']
+    _gc.collect()
     return names
 
 
@@ -115,6 +138,7 @@ def code_count(what='lines', detail=False):
             count_def[d] = cnt_def
         if cnt_char != 0:
             count_char[d] = cnt_char
+    _gc.collect()
 
     if what == 'lines':
         if detail:
