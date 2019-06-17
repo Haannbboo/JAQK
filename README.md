@@ -18,12 +18,12 @@ _Contact: hbopublic@163.com_
 For quick installation with **PyPI**:
 ```sh
 # PyPI 
-pip install JAQK
+pip install jaqk
 ```
 and you can **upgrade** the package with:
 ```sh
 # PyPI upgrade
-pip install JAQK --upgrade
+pip install jaqk --upgrade
 ```
 You can also set up the package after downloading the package from this site:
 ```sh
@@ -37,7 +37,7 @@ python setup.py install
   - [requests](https://2.python-requests.org//en/master/)
   - [pyquery](https://pyquery.readthedocs.io/en/latest/)
   - [aiohttp](https://aiohttp.readthedocs.io/en/stable/)
-  - [selenium](https://selenium-python.readthedocs.io) (optional)
+  - [selenium](https://selenium-python.readthedocs.io) (optional; it will be changed to pypeppter)
 - For data processing
   - [pandas](http://pandas.pydata.org/ "pandas")
   - [numpy](http://www.numpy.org)
