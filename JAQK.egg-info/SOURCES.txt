@@ -8,11 +8,13 @@ JAQK.egg-info/top_level.txt
 jaqk/__init__.py
 jaqk/calculation.py
 jaqk/get.py
-jaqk/test.py
+jaqk/test2.py
 jaqk/basics/__init__.py
 jaqk/basics/stocks.py
+jaqk/basics/test_basics.py
 jaqk/calculations/__init__.py
 jaqk/calculations/rank.py
+jaqk/calculations/test_calculations.py
 jaqk/database/__init__.py
 jaqk/database_test/__init__.py
 jaqk/factors/__init__.py
@@ -22,6 +24,7 @@ jaqk/factors/factors.py
 jaqk/factors/income.py
 jaqk/factors/key.py
 jaqk/factors/stats.py
+jaqk/factors/test_factors.py
 jaqk/getters/__init__.py
 jaqk/getters/get_analysis.py
 jaqk/getters/get_financials.py
@@ -38,6 +41,7 @@ jaqk/operations/Save.py
 jaqk/operations/Tools.py
 jaqk/operations/Trans.py
 jaqk/operations/__init__.py
+jaqk/operations/test_operations.py
 jaqk/proxies/__init__.py
 jaqk/proxies/get_proxies.py
 jaqk/proxies/proxies.py
@@ -47,3 +51,4 @@ jaqk/stock/analysis.py
 jaqk/stock/financials.py
 jaqk/stock/prices.py
 jaqk/stock/profile.py
+jaqk/stock/test_stock.py

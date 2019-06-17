@@ -11,14 +11,11 @@ def stats(stock):
     stock - a company's code (eg. AAPL)
     returns a csv sheet with all statistics in yahoo finance for the company
     '''
-    try:
-        a=Valuation_Measures(stock)
-        b=Financial_Highlights(stock)
-        c=Trading_Information(stock)
-        df=_pd.concat([a,b,c],ignore_index=True)
-        return df
-    except Exception:
-        print("Something wrong with the data for stats for {}".format(stock))
+    a=Valuation_Measures(stock)
+    b=Financial_Highlights(stock)
+    c=Trading_Information(stock)
+    df=_pd.concat([a,b,c],ignore_index=True)
+    return df
     
 
 

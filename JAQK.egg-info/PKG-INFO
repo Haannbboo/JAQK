@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: JAQK
-Version: 0.0.2.1
+Version: 0.0.2.2
 Summary: A light toolkit for crawling financia data and basic analysis and calcualtions.
 Home-page: https://github.com/Haannbboo/JAQK
 Author: Hanbo Guo
@@ -72,5 +72,6 @@ Classifier: Programming Language :: Python :: 3.3
 Classifier: Programming Language :: Python :: 3.4
 Classifier: Programming Language :: Python :: 3.5
 Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
 Classifier: License :: OSI Approved :: MIT License
 Description-Content-Type: text/markdown

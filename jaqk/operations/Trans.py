@@ -4,13 +4,14 @@ import urllib
 import json
 import requests
 
+
 def _t_util(text, t, f):
-    #if not (t in Lans().values() and f in Lans().values()):
+    # if not (t in Lans().values() and f in Lans().values()):
     #    raise ValueError("Inaapropriate language set, use function Lans() to see the abbreviations of languages")
     # Using Baidu translate API
     url = 'http://api.fanyi.baidu.com/api/trans/vip/translate'
     app_id = '20190321000279637'
-    secretKey = 'mCoDy3N0ANeB7MVtUsDT' # My own
+    secretKey = 'mCoDy3N0ANeB7MVtUsDT'  # My own
     salt = random.randint(12345, 98765)
 
     temp = app_id + text + str(salt) + secretKey
@@ -25,8 +26,9 @@ def _t_util(text, t, f):
 
     return result
 
-def _translate(text,t='en'):
-    if t=='en':
+
+def _translate(text, t='en'):
+    if t == 'en':
         return text
-    trans=_t_util(text,t,f='en')
+    trans = _t_util(text, t, f='en')
     return trans

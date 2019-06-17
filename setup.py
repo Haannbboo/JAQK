@@ -16,7 +16,8 @@ def install_requirements():
         'pyquery>=1.4.0',
         'aiohttp>=3.4.0',
         'PySimpleGUI>=3.0.0',
-        'scipy>=1.0.0'
+        'scipy>=1.0.0',
+        'unittest>=3.1'
         ]
     return reqs
         
@@ -40,6 +41,7 @@ setuptools.setup(
         "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
         "License :: OSI Approved :: MIT License",
     ],
 )

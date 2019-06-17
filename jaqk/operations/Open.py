@@ -12,12 +12,12 @@ datapath = _os.path.join(p, 'database')
 
 
 def open_file(stock, name):
-    '''
+    """
     opener for opening sheets for client
     stock - company name (e.g AAPL for apple inc.)
     name - name of the sheet (e.g 'income' / 'balace'), use sheets_names() to see all names
     returns a csv sheet of the sheet of the company
-    '''
+    """
     # datapath='/Users/hanbo/Desktop/ML/QA/JAQK/database/'
     if not isinstance(stock, str):
         raise TypeError("Parameter 'stock' should be a string, not a "

@@ -5,9 +5,6 @@ from .calculations import rank
 from .factors import cash_flow, income, balance, key, stats
 
 
-def _factor(df, factor):
-    f=_decimal(df[df['Statements'].isin([factor])].values[0][1:])
-    return f
 
 
 

@@ -1,8 +1,6 @@
 import requests
 
 
-
-
 def getter(url, timeout=10, proxies=None, retry=True, error=True):
     # main get function for all the website getter
     # it would support proxies, multiple user agent
@@ -16,14 +14,14 @@ def getter(url, timeout=10, proxies=None, retry=True, error=True):
     }
     try:
         html = requests.get(url, headers=headers, proxies=proxies, timeout=timeout).text
-        error=False
+        error = False
     except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout):
         print("Connection Error, read time out")
-        error=True
+        error = True
     if retry:
-        if error==False:
+        if error == False:
             return html
         else:
-            getter(url,timeout,error)
+            getter(url, timeout, error)
     else:
         return False
