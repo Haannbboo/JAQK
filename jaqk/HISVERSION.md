@@ -17,3 +17,5 @@
 - 4pm, Jun.15th: Add client function: test() (test includes operations, basics, calculations, factors, stock)
 ##### 0.0.2.2 Jun.17th 2019:
 - 2pm, Jun.17th: Update client function: test() (resolve all Failures and Exceptions in unittests)
+###### 0.0.2.2.1 Jun.17th 2019:
+- 2pm, Jun.17th: Add client function: database_clear()
