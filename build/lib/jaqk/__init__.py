@@ -16,12 +16,9 @@ from .basics.stocks import stock_list
 from .factors.factors import get_factors
 
 from .operations.Save import save  # done
-from .operations.Tools import database_count, factors_names, sheets_names, code_count
+from .operations.Tools import (database_count, database_clear, factors_names,
+                               sheets_names, code_count)
 from .operations.Open import open_file
-
-# from operations.Open import open_file, open_general
-
-# from operations.Trans import translate
 
 
 # calculation.key.Beta is not done

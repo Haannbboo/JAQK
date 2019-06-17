@@ -154,6 +154,7 @@ class test_operations(_unittest.TestCase):
         _os.remove(_os.path.join(datapath, 'test', 'testClientSave2.xls'))
 
     def test_Tools(self):
+        # database_count() and sheets_names() no need to test
         from .Tools import factors_names
         self.assertEqual(len(factors_names()), 182)
         self.assertEqual(len(factors_names('income')), 21)
@@ -165,3 +166,6 @@ class test_operations(_unittest.TestCase):
         self.assertIsInstance(code_count('lines', True), dict)
         self.assertGreaterEqual(code_count('defs'), 100)
         self.assertGreaterEqual(code_count('chars'), 62888)
+
+        # not testing database_clear() now
+        
