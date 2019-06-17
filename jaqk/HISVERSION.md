@@ -14,3 +14,6 @@
 - 9pm, Jun.12th: Add client function: code_count()
 ##### 0.0.2.1 Jun.13th 2019
 - 8am, Jun.13th: Update to reduce bug for PyPi import
+- 4pm, Jun.15th: Add client function: test() (test includes operations, basics, calculations, factors, stock)
+##### 0.0.2.2 Jun.17th 2019:
+- 2pm, Jun.17th: Update client function: test() (resolve all Failures and Exceptions in unittests)
