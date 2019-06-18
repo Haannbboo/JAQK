@@ -381,17 +381,30 @@ def setup():
     # setup AAPL and AMZN
     companies = ['AAPL', 'AMZN']
     dirs = [_os.listdir(_os.path.join(datapath, c)) for c in companies]
-    if not('.csv' in dirs[0][2] and '.csv' in dirs[0][5]):
-        dirs2 = dirs[:]
+    #if not('.csv' in dirs[0][2] and '.csv' in dirs[0][5]):
+    dirs2 = dirs[:]
+    del dirs
+    try:
+        [dirs2[i].remove('__init__.py') for i in range(2)]
+    except ValueError:
+        pass
+    if '.py' in ''.join(dirs2[0])+''.join(dirs2[1]):
         # convert .py into .csv
         [open_file(companies[c], dirs2[c][d], setup=True).to_csv(_os.path.join(datapath, companies[c], dirs2[c][d].split('.')[0]+'.csv'), index=False)
-        for c in range(len(companies)) for d in range(len(dirs2[c])) if dirs2[c][d]!='__init__.py']
+        for c in range(len(companies)) for d in range(len(dirs2[c])) if dirs2[c][d]!='__init__.py' and dirs2[c][d]!='__pycache__']
         
         # delete original .py files
-        [_os.remove(_os.path.join(datapath, companies[i], dirs2[i][j])) for i in range(len(companies)) for j in range(len(dirs2[i])) if dirs2[i][j]!='__init__.py' and '.csv' not in dirs2[i][j]]
+        [_os.remove(_os.path.join(datapath, companies[i], dirs2[i][j])) for i in range(len(companies)) for j in range(len(dirs2[i])) if dirs2[i][j]!='__init__.py' and ('.csv' not in dirs2[i][j]) and dirs2[i][j]!='__pycache__']
 
-    dirs_general = _os.listdir(_os.path.join(datapath, 'general'))
-    if not('.csv' in dirs_general[1] or '.csv' in dirs_general[2]):
+    dirs_general2 = _os.listdir(_os.path.join(datapath, 'general'))
+    dirs_general = dirs_general2[:]
+    del dirs_general2
+    try:
+        dirs_general.remove('__init__.py')
+    except ValueError:
+        pass
+    
+    if '.py' in ''.join(dirs_general):
         # setup stock_list general
         exc = ['NYSE', 'NASDAQ']
         [open_general(ex, setup=True).to_csv(_os.path.join(datapath, 'general', ex+'.csv'), index=False)
@@ -410,13 +423,6 @@ def setup():
             w.write(d)
         _os.remove(_os.path.join(main_path, 'datefile.py'))
         
-
     _gc.collect()
     print("Database has been setup")
 
-
-
-
-
-
-    

@@ -48,7 +48,11 @@ def factors_names(sheet=None):
     if sheet is None:
         fil = _os.listdir(_os.path.join(datapath, 'AAPL'))
         files = fil[:]
-        files.remove('__init__.py')
+        try:
+            files.remove('__init__.py')
+            files.remove('__pycache__')
+        except ValueError:
+            pass
 
         dfs = (_pd.read_csv(_os.path.join(datapath, 'AAPL', c)) for c in files)  # generator
         r = [df.iloc[0:, 0].values[1:] for df in dfs if len(df) < 48]

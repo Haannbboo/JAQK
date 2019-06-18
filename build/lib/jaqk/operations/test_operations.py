@@ -11,8 +11,11 @@ class test_operations(_unittest.TestCase):
         from .Folder import create_folder, p
         path = _os.path.join(p, 'operations')
         orig = _os.listdir(path)
+        x = len(orig)
+        if 'test_folder' not in orig:
+            x += 1
         create_folder('test_folder', 'operations')
-        self.assertEqual(len(orig), len(_os.listdir(path)))  # if exists - no change
+        self.assertEqual(x, len(_os.listdir(path)))  # if exists - no change
 
         from .Folder import exist
         self.assertTrue(exist('AAPL', 'income'))
