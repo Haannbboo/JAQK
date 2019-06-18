@@ -55,5 +55,5 @@ If you have any detailed question about the plan/design/develop of this tookit, 
 
 ## Previous Updates
 
-All changes (pushes) have been recorded [here](https://github.com/Haannbboo/JAQK/blob/master/jaqk/HISVERSION.md). Click for more details.
+All changes (pushes) have been recorded [here](https://github.com/Haannbboo/JAQK/blob/master/HISVERSION.md). Click for more details.
   
