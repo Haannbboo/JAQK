@@ -22,3 +22,5 @@
 - 9pm, Jun.17th: Add client function: load_stock_list()
 ###### 0.0.2.2.2 Jun.17th 2019
 - 11pm, Jun.17th: Update to PyPI for client testing (using IDLE)
+###### 0.0.2.2.3 Jun.18th 2019
+- 3pm, Jun.18th: Resolve database PyPI installation problem; add client function: setup()
