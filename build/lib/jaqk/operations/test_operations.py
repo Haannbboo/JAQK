@@ -113,8 +113,8 @@ class test_operations(_unittest.TestCase):
             open_file(12234, 'income')
 
         from .Open import open_general
-        self.assertGreaterEqual(len(open_general('NASDAQ.csv')), 3000)
-        self.assertGreaterEqual(len(open_general('NYSE.csv')), 3000)
+        self.assertGreaterEqual(len(open_general('NASDAQ')), 3000)
+        self.assertGreaterEqual(len(open_general('NYSE')), 3000)
 
     def test_Path(self):
         from .Path import path

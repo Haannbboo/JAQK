@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: JAQK
-Version: 0.0.2.2.1
+Version: 0.0.2.2.3
 Summary: A light toolkit for crawling financia data and basic analysis and calcualtions.
 Home-page: https://github.com/Haannbboo/JAQK
 Author: Hanbo Guo
@@ -68,7 +68,6 @@ Description: # Welcome to JAQK financial report package
         
 Keywords: US Stock Market Data
 Platform: UNKNOWN
-Classifier: Programming Language :: Python :: 3.3
 Classifier: Programming Language :: Python :: 3.4
 Classifier: Programming Language :: Python :: 3.5
 Classifier: Programming Language :: Python :: 3.6

@@ -11,7 +11,7 @@ global datapath
 datapath = _os.path.join(p, 'database')
 
 
-def open_file(stock, name):
+def open_file(stock, name, setup=False):
     """
     opener for opening sheets for client
     stock - company name (e.g AAPL for apple inc.)
@@ -22,6 +22,11 @@ def open_file(stock, name):
     if not isinstance(stock, str):
         raise TypeError("Parameter 'stock' should be a string, not a "
                         + type(stock).__name__)
+    if setup == True: # when setup, name is "AAPL_income.csv", not "income"
+        path = _os.path.join(datapath, stock, name)
+        df = _pd.read_csv(path)
+        _gc.collect()
+        return df
     names = ['major_holders', 'top_institutional_holders', 'top_mutual_fund_holders',
              'Trading_Information', 'Financial_Highlights', 'Valuation_Measures',
              'Executives', 'Description',
@@ -45,11 +50,13 @@ def open_file(stock, name):
     return df
 
 
-def open_general(file):
+def open_general(file, setup=False):
     try:
-        path = _os.path.join(datapath, 'general')
-        p = _os.path.join(path, file)
-        df = _pd.read_csv(p)
+        p = _os.path.join(datapath, 'general', file)
+        if setup==False:
+            df = _pd.read_csv(p + '.csv')
+        elif setup==True:
+            df = _pd.read_csv(p + '.py')
     except Exception as e:
         print("Something wrong in opening the stock list: "+str(e))
     return df

@@ -46,7 +46,9 @@ def database_reset():
 
 def factors_names(sheet=None):
     if sheet is None:
-        files = _os.listdir(_os.path.join(datapath, 'AAPL'))
+        fil = _os.listdir(_os.path.join(datapath, 'AAPL'))
+        files = fil[:]
+        files.remove('__init__.py')
 
         dfs = (_pd.read_csv(_os.path.join(datapath, 'AAPL', c)) for c in files)  # generator
         r = [df.iloc[0:, 0].values[1:] for df in dfs if len(df) < 48]

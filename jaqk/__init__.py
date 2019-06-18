@@ -19,12 +19,13 @@ from .operations.Save import save  # done
 from .operations.Tools import (database_count, database_clear, factors_names,
                                sheets_names, code_count)
 from .operations.Open import open_file
+# from .operations.Open import open_general as _open_general
 
 
 # calculation.key.Beta is not done
 
 from .calculation import *
-from .get import update, getLastUpdate, main_get, load_stock_list
+from .get import update, getLastUpdate, main_get, load_stock_list, setup
 
 from .operations.Path import path  # not tested
 

@@ -24,6 +24,7 @@ from .getters.get_summary import get_summary
 
 from .operations.Save import save_file, save_dfs, save_analysis, datapath  # helpful operations
 from .operations.Folder import create_folder, exist
+from .operations.Open import open_file, open_general
 
 global main_path
 main_path = _os.path.abspath(_os.path.dirname(__file__))
@@ -361,3 +362,61 @@ def load_stock_list():
          sheet_names]  # header of stocks is TICKER in client's stock list
     r = [i[j] for i in r for j in range(len(i))]
     return r
+
+
+def _is_global(): # resolve datapath scrope problem
+    try:
+        type(datapath)
+        return True
+    except NameError:
+        return False
+
+
+def setup():
+    """
+    setup the database; this should be done before anything
+    """
+    assert _is_global()==True
+
+    # setup AAPL and AMZN
+    companies = ['AAPL', 'AMZN']
+    dirs = [_os.listdir(_os.path.join(datapath, c)) for c in companies]
+    if not('.csv' in dirs[0][2] and '.csv' in dirs[0][5]):
+        dirs2 = dirs[:]
+        # convert .py into .csv
+        [open_file(companies[c], dirs2[c][d], setup=True).to_csv(_os.path.join(datapath, companies[c], dirs2[c][d].split('.')[0]+'.csv'), index=False)
+        for c in range(len(companies)) for d in range(len(dirs2[c])) if dirs2[c][d]!='__init__.py']
+        
+        # delete original .py files
+        [_os.remove(_os.path.join(datapath, companies[i], dirs2[i][j])) for i in range(len(companies)) for j in range(len(dirs2[i])) if dirs2[i][j]!='__init__.py' and '.csv' not in dirs2[i][j]]
+
+    dirs_general = _os.listdir(_os.path.join(datapath, 'general'))
+    if not('.csv' in dirs_general[1] or '.csv' in dirs_general[2]):
+        # setup stock_list general
+        exc = ['NYSE', 'NASDAQ']
+        [open_general(ex, setup=True).to_csv(_os.path.join(datapath, 'general', ex+'.csv'), index=False)
+         for ex in exc]
+        [_os.remove(_os.path.join(datapath, 'general', ex+'.py')) for ex in exc]
+
+    if 'dates_temp.py' in _os.listdir(main_path):
+    # dates_temp.py
+        _pd.read_csv(_os.path.join(main_path, 'dates_temp.py')).to_csv(_os.path.join(main_path, 'dates_temp.csv'), index=False)
+        _os.remove(_os.path.join(main_path, 'dates_temp.py')) # delete original\
+
+    if 'datefile.py' in _os.listdir(main_path):
+        with open(_os.path.join(main_path, 'datefile.py')) as d:
+            d = d.read()
+        with open(_os.path.join(main_path, 'datefile.txt'), mode='w') as w:
+            w.write(d)
+        _os.remove(_os.path.join(main_path, 'datefile.py'))
+        
+
+    _gc.collect()
+    print("Database has been setup")
+
+
+
+
+
+
+    
