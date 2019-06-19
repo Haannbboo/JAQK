@@ -99,6 +99,7 @@ def percentile(Factor, percentage=80):
     assert len(n) == len(d)
     target = [_np.percentile(n[:, i], percentage) for i in range(4)]
     result = [[d[i] for i in range(len(n)) if n[i][j] >= target[j]] for j in range(len(target))]
+    _gc.collect()
     return result
 
 

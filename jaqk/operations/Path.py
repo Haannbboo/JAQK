@@ -41,4 +41,5 @@ def path(factor):
     if factor in summary:
         return 'Summary'
     del summary
-    raise ValueError("Factor '" + factor + "' not in database")
+    raise ValueError("Factor '{}' not in database, use jaqk.factors_names() to find all all factors' names".format
+                     (factor))

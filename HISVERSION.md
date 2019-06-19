@@ -26,3 +26,6 @@
 - 3pm, Jun.18th: Resolve database PyPI installation problem; add client function: setup()
 ###### 0.0.2.2.4 Jun.18th 2019
 - 5pm, Jun.18th: Update test(), setup(), create_folder(); debug for setup() and test()
+###### 0.0.2.2.5 Jun.19th 2019
+- 9pm, Jun.19th: Add parameter "sheets" to main_get(), enables downloading parts of data
+- 10pm, Jun.19th: Add 'xlrd>=1.0.0' to setup

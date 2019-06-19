@@ -64,7 +64,7 @@ async def getter(url, timeout=20, error=True, proxy=None, cnt=0):
         await getter(url, timeout, error, cnt=cnt + 1)
 
 
-async def parse(c, names, update=False, save_mode='w'):
+async def parse(c, names, sheets, update=False):
     urls = ['https://finance.yahoo.com/quote/' + c + '/holders?p=' + c,
             'https://finance.yahoo.com/quote/' + c + '/financials?p=' + c,
             'https://finance.yahoo.com/quote/' + c + '/balance-sheet?p=' + c,
@@ -73,12 +73,15 @@ async def parse(c, names, update=False, save_mode='w'):
             'https://finance.yahoo.com/quote/' + c + '/profile?p=' + c,
             'https://finance.yahoo.com/quote/' + c + '/analysis?p=' + c,
             'https://finance.yahoo.com/quote/' + c + '?p=' + c]
-
+    if isinstance(sheets, str):
+        sheets = [sheets] # double check
+    
+    
     try:
         # get summary needs changes - handle NAN
         # needs bug recorder
         create_folder(c)
-        if not exist(c, 'Summary', update):
+        if not exist(c, 'Summary', update) and _is_active('Summary', sheets):
             try:
                 html = await getter(urls[7])
                 # input("Press enter to continue")
@@ -89,7 +92,7 @@ async def parse(c, names, update=False, save_mode='w'):
                 await asyncio.sleep(0.27)
             except Exception:
                 pass
-        if not exist(c, names[3:6], update):
+        if not exist(c, names[3:6], update) and _is_active(names[3:6], sheets):
             try:
                 html = await getter(urls[4])
                 save_dfs(get_stats(html), c, names[3:6])
@@ -99,7 +102,7 @@ async def parse(c, names, update=False, save_mode='w'):
                 await asyncio.sleep(0.27)
             except Exception:
                 pass
-        if not exist(c, names[0:3], update):
+        if not exist(c, names[0:3], update) and _is_active(names[0:3], sheets):
             try:
                 html = await getter(urls[0])
                 save_file(get_major_holders(html), c, names[0], update)
@@ -111,7 +114,7 @@ async def parse(c, names, update=False, save_mode='w'):
                 await asyncio.sleep(0.27)
             except Exception:
                 pass
-        if not exist(c, names[6:8], update):
+        if not exist(c, names[6:8], update) and _is_active(names[6:8], sheets):
             try:
                 html = await getter(urls[5])
                 save_dfs([get_executives(html), get_description(html)], c, names[6:8])
@@ -121,7 +124,7 @@ async def parse(c, names, update=False, save_mode='w'):
                 await asyncio.sleep(0.27)
             except Exception:
                 pass
-        if not exist(c, names[8:14], update):
+        if not exist(c, names[8:14], update) and _is_active(names[8:14], sheets):
             try:
                 html = await getter(urls[6])
                 save_analysis(get_analysis(html), c)
@@ -131,7 +134,7 @@ async def parse(c, names, update=False, save_mode='w'):
                 await asyncio.sleep(0.27)
             except Exception:
                 pass
-        if not exist(c, 'income', update):
+        if not exist(c, 'income', update) and _is_active('income', sheets):
             try:
                 html = await getter(urls[1])
                 save_file(get_reports(html), c, 'income', update)
@@ -141,7 +144,7 @@ async def parse(c, names, update=False, save_mode='w'):
                 await asyncio.sleep(0.27)
             except Exception:
                 pass
-        if not exist(c, 'balance', update):
+        if not exist(c, 'balance', update) and _is_active('balance', sheets):
             try:
                 html = await getter(urls[2])
                 save_file(get_reports(html), c, 'balance', update)
@@ -151,7 +154,7 @@ async def parse(c, names, update=False, save_mode='w'):
                 await asyncio.sleep(0.27)
             except Exception:
                 pass
-        if not exist(c, 'cash_flow', update):
+        if not exist(c, 'cash_flow', update) and _is_active('balance', sheets):
             try:
                 html = await getter(urls[3])
                 save_file(get_reports(html), c, 'cash_flow', update)
@@ -175,9 +178,12 @@ def get_all_stocks(exchange):  # Get all stocks required using the stock_list op
     return s
 
 
-def main(stocks='NYSE', update=False, batch=64):
+def main(stocks, sheets, update=False, batch=64):
     """
-    exchange -- either NYSE or NASDAQ
+    stocks -- either NYSE or NASDAQ
+    sheets - list - retrieve from main_get(), sheets that will get
+    update - used for update()
+    batch - batch size, retrieve from main_get()
     """
     if stocks in ['NYSE', 'NASDAQ']:  # load all stocks
         stocks = get_all_stocks(stocks)
@@ -190,14 +196,15 @@ def main(stocks='NYSE', update=False, batch=64):
              'Earnings_Estimate', 'Revenue_Estimate', 'Earnings_History',
              'EPS_Trend', 'EPS_Revisions', 'Growth_Estimates',
              'stats', 'statements', 'reports',
-             'Executives', 'Description', 'analysis', 'Summary']  # things that'll be updated
+             'Executives', 'Description', 'analysis', 'Summary',
+             'income', 'balance', 'cash_flow']  # things that'll be updated
     len_temp = int(len(stocks))
     if len_temp < batch:
         batch = len_temp
     for i in range(0, len_temp, batch):  # Yahoo Spyder main; async main loop
         # async in 3.6, different callings in 3.7
         t1 = time.time()
-        tasks = [asyncio.ensure_future(parse(c, NAMES, update=update)) for c in stocks[i:i + batch]]  # async calling
+        tasks = [asyncio.ensure_future(parse(c, NAMES, sheets=sheets, update=update)) for c in stocks[i:i + batch]]  # async calling
         loop = asyncio.get_event_loop()
         loop.run_until_complete(asyncio.wait(tasks))
         t2 = time.time()
@@ -230,10 +237,11 @@ def _speedtestf():
 '''
 
 
-def main_get(stocks='ALL', batch=32):
+def main_get(stocks='ALL', sheets='financials', batch=32):
     """
     Main getter for client, MUST be runned after installation of the package (default update all stocks in NYSE and NASDAQ)
     stocks - str - default ALL, can be NYSE, NASDAQ, list of ticket, load_stock_list() (for client only)
+    sheets - list/str - default financials (income, balance, cash_flow), use "ALL" to indicate all sheets; choices include: financials, key-statistics, summary, profile, analysis, holders
     batch - default 32, batch size for loop (recommend to change based on interest status)
     """
     if stocks not in ['NYSE', 'NASDAQ', 'ALL']:
@@ -243,13 +251,37 @@ def main_get(stocks='ALL', batch=32):
                 stocks = str(stocks[0:4] + ['......'] + stocks[-2:])
             raise ValueError("Parameter 'stocks' should be one of NYSE, NASDAQ, and ALL, not {} object: {}"
                              .format(t.__name__, str(stocks)))
+    if len(stocks)==0:
+        raise ValueError("Parameter 'stocks' must have something in it.")
+    
+    if isinstance(sheets, str):
+        sheets = [sheets] # str - list
+    for i in sheets: # avoird typo
+        if i not in ['financials', 'key-statistics', 'summary', 'profile', 'analysis', 'holders']:
+            raise ValueError("Parameter 'sheets' should come from: financials, key-statistics, summary, profile, analysis, holders, not {}".format(i))
+    if sheets[0] == 'ALL':
+        sheets = ['income', 'cash_flow', 'balance', 'Financial_Highlights', 'Valuation_Measures', 'Trading_Information',
+                  'Sumary', 'Executives', 'Description', 'Earnings_Estimate', 'Revenue_Estimate', 'Earnings_History', 'EPS_Trend', 'EPS_Revisions', 'Growth_Estimates',
+                  'major_holders', 'top_institutional_holders', 'top_mutual_fund_holders']
+    else:
+        d = {'financials': ['income', 'cash_flow', 'balance'], 'key-statistics': ['Financial_Highlights', 'Valuation_Measures', 'Trading_Information'],
+             'summary': ['Sumary'], 'profile': ['Executives', 'Description'],
+             'analysis': ['Earnings_Estimate', 'Revenue_Estimate', 'Earnings_History', 'EPS_Trend', 'EPS_Revisions', 'Growth_Estimates'],
+             'holders': ['major_holders', 'top_institutional_holders', 'top_mutual_fund_holders']}
+        sheets = [d[i] for i in sheets] # map webpages to sheets
+        sheets = [i[j] for i in sheets for j in range(len(i))] # squeeze
+        print("Get includes: ......")
+        print(str(sheets))
+    with open(_os.path.join(main_path, 'get_sheets_cache.txt'), 'w') as w:
+        w.write(','.join(sheets)) # save param sheets to cache for update() to use
+
     if stocks == 'ALL':
-        main(stocks='NYSE', batch=batch)
+        main(stocks='NYSE', sheets=sheets, batch=batch)
         print("Updated NYSE data")
-        main(stocks='NASDAQ', batch=batch)
+        main(stocks='NASDAQ', sheets=sheets, batch=batch)
         print("Updated NASDAQ data")
     else:
-        main(stocks=stocks, batch=batch)
+        main(stocks=stocks, sheets=sheets, batch=batch) # updated for sheets
         if len(stocks) > 10:
             stocks = str(stocks[0:4] + ['......'] + stocks[-2:])
         print("Updated all data for" + str(stocks))
@@ -304,6 +336,11 @@ def update_all_days():
 
     # input('Cut-point check') # for checking
     # df.tolist() is depreciated... use df.values.tolist() instead
+    try:
+        with open(_os.path.join(main_path, 'get_sheets_cache.txt'), mode='r') as w:
+            sheets = w.read().split(',') # read sheets parameter
+    except FileNotFoundError:
+        print("Exception FileNotFoundError")
     updates = _pd.read_csv('dates_temp.csv', index_col=0).values.tolist()  # read dates
     updates = set([i[j] for i in updates for j in range(len(i))])  # for set operation AND
     needs_update_list = list(updates.intersection(stocksss))
@@ -312,7 +349,7 @@ def update_all_days():
     if company_list_length == 0:
         return
     try:
-        main(needs_update_list, update=True)  # no syntax error here
+        main(needs_update_list, sheets=sheets, update=True)  # no syntax error here
         # working smoothly now (not fast enough)
     except Exception as e:
         print("Exception in update each day: " + str(e))
@@ -425,4 +462,17 @@ def setup():
         
     _gc.collect()
     print("Database has been setup")
+    
+
+def _is_active(names, sheets):
+    if isinstance(names, str):
+        names = [names]
+    return set(names).issubset(set(sheets))
+
+
+
+
+
+
+    
 

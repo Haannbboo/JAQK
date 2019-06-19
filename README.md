@@ -25,9 +25,10 @@ and you can **upgrade** the package with:
 # PyPI upgrade
 pip install jaqk --upgrade
 ```
-You can also set up the package after downloading the package from this site:
+You can also **set up** the package after downloading the package from this site:
 ```sh
 # install after downloading
+cd (PATH of the download)
 python setup.py install
 ```
 
@@ -38,10 +39,11 @@ python setup.py install
   - [pyquery](https://pyquery.readthedocs.io/en/latest/)
   - [aiohttp](https://aiohttp.readthedocs.io/en/stable/)
   - [selenium](https://selenium-python.readthedocs.io) (optional; it will be changed to pypeppter)
+  - [openpyxl](https://openpyxl.readthedocs.io/en/stable/)
 - For data processing
   - [pandas](http://pandas.pydata.org/ "pandas")
   - [numpy](http://www.numpy.org)
-- Other necessary
+- Other necessities
   - [pysimplegui](https://pysimplegui.readthedocs.io/en/latest/)
   
 ## Documentation
@@ -51,7 +53,7 @@ The official documentation is hosted by [github.io]().
 For usage questions, the best place to go to is [StackOverflow](https://stackoverflow.com/questions/tagged/JAQK);
 Further, general questions and discussions can also take place on the github [issues section](https://github.com/Haannbboo/JAQK/issues).
 
-If you have any detailed question about the plan/design/develop of this tookit, feel free to contact me through my email.
+If you have **ANY** detailed question about the plan/design/develop of this package, feel free to contact me through my email.
 
 ## Previous Updates
 

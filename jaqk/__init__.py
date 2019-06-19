@@ -24,7 +24,9 @@ from .operations.Open import open_file
 
 # calculation.key.Beta is not done
 
-from .calculation import *
+#from .calculation import *
+from .calculations import rank
+from .factors import cash_flow, income, balance, key, stats
 from .get import update, getLastUpdate, main_get, load_stock_list, setup
 
 from .operations.Path import path  # not tested

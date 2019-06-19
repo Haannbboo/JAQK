@@ -6,7 +6,6 @@ JAQK.egg-info/dependency_links.txt
 JAQK.egg-info/requires.txt
 JAQK.egg-info/top_level.txt
 jaqk/__init__.py
-jaqk/calculation.py
 jaqk/datefile.py
 jaqk/dates_temp.py
 jaqk/get.py

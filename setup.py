@@ -17,7 +17,8 @@ def install_requirements():
         'aiohttp>=3.4.0',
         'PySimpleGUI>=3.0.0',
         'scipy>=1.0.0',
-        'openpyxl>=2.4.0'
+        'openpyxl>=2.4.0',
+        'xlrd>=1.0.0' # for openpyxl
         ]
     return reqs
         
