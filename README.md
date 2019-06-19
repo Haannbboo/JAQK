@@ -54,7 +54,7 @@ The official documentation is hosted by [github.io]() (Nothing there right now..
 For usage questions, the best place to go to is [StackOverflow](https://stackoverflow.com/questions/tagged/JAQK);
 Further, general questions and discussions can also take place on the github [issues section](https://github.com/Haannbboo/JAQK/issues).
 
-If you have **ANY** detailed question about the plan/design/develop of this package, feel free to contact me through my email.
+If you have **ANY** detailed question about the plan/design/develop of this package, feel free to contact me through my [email](hbopublic@163.com).
 
 ## Previous Updates
 
