@@ -28,7 +28,7 @@ pip install jaqk --upgrade
 You can also **set up** the package after downloading the package from this site:
 ```sh
 # install after downloading
-cd (PATH of the download)
+cd (PATH of the download, change to yours) (e.g. macOS: /Users/hanbo/Downloads/JAQK-master; windows: C:\Users\hanbo\Desktop\JAQK-master) 
 python setup.py install
 ```
 
@@ -45,6 +45,7 @@ python setup.py install
   - [numpy](http://www.numpy.org)
 - Other necessities
   - [pysimplegui](https://pysimplegui.readthedocs.io/en/latest/)
+  - unittest >= 3.2.0
   
 ## Documentation
 The official documentation is hosted by [github.io]() (Nothing there right now...).
