@@ -5,18 +5,32 @@ import numpy as _np
 
 global p
 p = _os.path.abspath(_os.path.join(_os.path.dirname(__file__), _os.pardir))
-global datapath
-datapath = _os.path.join(p, 'database')
+# global datapath
+# datapath = _os.path.join(p, 'database')
+
+def _datapath(setup=True):
+    """
+    The global datapath for all other file. It sets your selected path in jaqk.setup() as the main datapath, and all data will be added/deleted from there.
+    """
+    try:
+        with open(_os.path.join(p, 'setup_cache.txt')) as w:
+            path = w.read()
+        if setup==True:
+            return path
+        else:
+            return _os.path.join(p, 'database')
+    except FileNotFoundError:
+        return _os.path.join(p, 'database')
 
 
 def database_count():
     """
     prints out the total number of companies and sheets in database
     """
-    a = len(_os.listdir(datapath)) - 2
-    b = _os.walk(datapath)  # generator
+    a = len(_os.listdir(_datapath())) - 3
+    b = _os.walk(_datapath())  # generator
     c = [1]
-    c = len([c[0] + 1 for root, dirs, files in b for name in files]) - 12
+    c = len([c[0] + 1 for root, dirs, files in b for name in files]) - 6
     print("Total number of companies contained: {}".format(a))
     print("Total number of detailed sheets: {}".format(c))
     _gc.collect()
@@ -26,11 +40,11 @@ def database_clear():
     """
     clear all data in database (use cautiously)
     """
-    files = (i for i in _os.listdir(datapath))
+    files = (i for i in _os.listdir(_datapath()))
     for f in files: # file name
         if f not in ['__init__.py', 'AAPL', 'AMZN', 'general', 'test']:
             _os.remove(f)
-    f2 = _os.listdir(datapath)
+    f2 = _os.listdir(_datapath())
     assert len(f2)<6
     print("Sucessfully clear all data in database")
 
@@ -46,7 +60,7 @@ def database_reset():
 
 def factors_names(sheet=None):
     if sheet is None:
-        fil = _os.listdir(_os.path.join(datapath, 'AAPL'))
+        fil = _os.listdir(_os.path.join(_datapath(), 'AAPL'))
         files = fil[:]
         try:
             files.remove('__init__.py')
@@ -54,19 +68,19 @@ def factors_names(sheet=None):
         except ValueError:
             pass
 
-        dfs = (_pd.read_csv(_os.path.join(datapath, 'AAPL', c)) for c in files)  # generator
+        dfs = (_pd.read_csv(_os.path.join(_datapath(), 'AAPL', c)) for c in files)  # generator
         r = [df.iloc[0:, 0].values[1:] for df in dfs if len(df) < 48]
         r = [i.tolist()[j] for i in r for j in range(len(i.tolist()))] + list(
-            _pd.read_csv(_os.path.join(datapath, 'AAPL', 'AAPL_Summary.csv')))[1:]
+            _pd.read_csv(_os.path.join(_datapath(), 'AAPL', 'AAPL_Summary.csv')))[1:]
         r = _np.array(r, dtype='str')
     else:
         if sheet not in sheets_names():
             raise ValueError('Parameter sheet is wrong, use sheets_names() to find all sheets names')
         file = 'AAPL_{}.csv'.format(sheet)
         if sheet == 'Summary':
-            r = _np.array(list(_pd.read_csv(_os.path.join(datapath, 'AAPL', 'AAPL_Summary.csv')))[1:])
+            r = _np.array(list(_pd.read_csv(_os.path.join(_datapath(), 'AAPL', 'AAPL_Summary.csv')))[1:])
         else:
-            r = _pd.read_csv(_os.path.join(datapath, 'AAPL', file)).iloc[0:-1, 0].values[1:]
+            r = _pd.read_csv(_os.path.join(_datapath(), 'AAPL', file)).iloc[0:-1, 0].values[1:]
     _gc.collect()
     return r
 

@@ -10,7 +10,6 @@ from .operations.test_operations import test_operations
 
 
 def test():
-    # from .stock.test_stock import test_stocks
     """
     Client function for testing EVERY method in this package
     """

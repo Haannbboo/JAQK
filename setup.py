@@ -6,7 +6,11 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 def read(fname):
-    return codecs.open(os.path.join(os.path.dirname(__file__), fname)).read()
+    try:
+        return codecs.open(os.path.join(os.path.dirname(__file__), fname)).read()
+    except FileNotFoundError:
+        return '0.0.1.3.3'
+    # 0.0.2.2.6
 
 def install_requirements():
     reqs = [

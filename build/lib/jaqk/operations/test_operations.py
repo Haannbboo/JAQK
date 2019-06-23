@@ -6,6 +6,7 @@ import os as _os
 import pandas as _pd
 
 
+
 class test_operations(_unittest.TestCase):
     def test_Folder(self):
         from .Folder import create_folder, p
@@ -143,18 +144,19 @@ class test_operations(_unittest.TestCase):
         self.assertEqual(list(df)[1], '03/01/2019')
         self.assertEqual(df.iloc[0:-1, 1][0], 12)
 
-        from .Save import save, datapath
+        from .Save import save
+        from ..get import datapath
         with self.assertRaises(ValueError):
             save(df, 'name', 'csv', test=True)  # '.csv'
         save(df, 'testClientSave', test=True)
-        files = _os.listdir(_os.path.join(datapath, 'test'))
+        files = _os.listdir(_os.path.join(datapath(False), 'test'))
         self.assertIn('testClientSave', ''.join(files))
-        _os.remove(_os.path.join(datapath, 'test', 'testClientSave.csv'))
+        _os.remove(_os.path.join(datapath(False), 'test', 'testClientSave.csv'))
 
         save(df, 'testClientSave2', '.xls', test=True)
-        files = _os.listdir(_os.path.join(datapath, 'test'))
+        files = _os.listdir(_os.path.join(datapath(False), 'test'))
         self.assertIn('.xls', ''.join(files))
-        _os.remove(_os.path.join(datapath, 'test', 'testClientSave2.xls'))
+        _os.remove(_os.path.join(datapath(False), 'test', 'testClientSave2.xls'))
 
     def test_Tools(self):
         # database_count() and sheets_names() no need to test

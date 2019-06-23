@@ -60,6 +60,7 @@ jaqk/database/AMZN/AMZN_top_mutual_fund_holders.py
 jaqk/database/AMZN/__init__.py
 jaqk/database/general/NASDAQ.py
 jaqk/database/general/NYSE.py
+jaqk/database/general/SP100.py
 jaqk/database/general/__init__.py
 jaqk/database/test/__init__.py
 jaqk/database/test/test_income.py

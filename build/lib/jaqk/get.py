@@ -22,7 +22,7 @@ from .getters.get_profile import get_executives, get_description
 from .getters.get_analysis import get_analysis
 from .getters.get_summary import get_summary
 
-from .operations.Save import save_file, save_dfs, save_analysis, datapath  # helpful operations
+from .operations.Save import save_file, save_dfs, save_analysis  # helpful operations
 from .operations.Folder import create_folder, exist
 from .operations.Open import open_file, open_general
 
@@ -237,21 +237,21 @@ def _speedtestf():
 '''
 
 
-def main_get(stocks='ALL', sheets='financials', batch=32):
+def main_get(stocks='SP100', sheets='financials', batch=32):
     """
     Main getter for client, MUST be runned after installation of the package (default update all stocks in NYSE and NASDAQ)
-    stocks - str - default ALL, can be NYSE, NASDAQ, list of ticket, load_stock_list() (for client only)
+    stocks - str - default SP100, can be ALL, NYSE, NASDAQ, list of tickets, load_stock_list() (for client only)
     sheets - list/str - default financials (income, balance, cash_flow), use "ALL" to indicate all sheets; choices include: financials, key-statistics, summary, profile, analysis, holders
     batch - default 32, batch size for loop (recommend to change based on interest status)
     """
-    if stocks not in ['NYSE', 'NASDAQ', 'ALL']:
-        if isinstance(stocks, str):
-            t = type(stocks)
-            if len(stocks) > 10:
-                stocks = str(stocks[0:4] + ['......'] + stocks[-2:])
-            raise ValueError("Parameter 'stocks' should be one of NYSE, NASDAQ, and ALL, not {} object: {}"
-                             .format(t.__name__, str(stocks)))
-    if len(stocks)==0:
+    if stocks not in ['NYSE', 'NASDAQ', 'ALL', 'SP100'] and isinstance(stocks, str):
+        # when stocks is nonesense
+        t = type(stocks)
+        if len(stocks) > 10:
+            stocks = str(stocks[0:4] + ['......'] + stocks[-2:])
+        raise ValueError("Parameter 'stocks' should be one of SP100, NYSE, NASDAQ, and ALL, not {} object: {}"
+                         .format(t.__name__, str(stocks)))
+    if len(stocks)==0: # empty list
         raise ValueError("Parameter 'stocks' must have something in it.")
     
     if isinstance(sheets, str):
@@ -275,7 +275,13 @@ def main_get(stocks='ALL', sheets='financials', batch=32):
     with open(_os.path.join(main_path, 'get_sheets_cache.txt'), 'w') as w:
         w.write(','.join(sheets)) # save param sheets to cache for update() to use
 
-    if stocks == 'ALL':
+    if stocks == 'SP100': # S&P 100 <- default
+        stocks = open_general('SP100')['Symbol'].tolist() # read csv
+        print("CUT")
+        input("CUT")
+        main(stocks=stocks, sheets=sheets, batch=batch)
+
+    elif stocks == 'ALL':
         main(stocks='NYSE', sheets=sheets, batch=batch)
         print("Updated NYSE data")
         main(stocks='NASDAQ', sheets=sheets, batch=batch)
@@ -283,7 +289,7 @@ def main_get(stocks='ALL', sheets='financials', batch=32):
     else:
         main(stocks=stocks, sheets=sheets, batch=batch) # updated for sheets
         if len(stocks) > 10:
-            stocks = str(stocks[0:4] + ['......'] + stocks[-2:])
+            stocks = str(stocks[0:4] + ['......'] + stocks[-2:]) # avoid print too much
         print("Updated all data for" + str(stocks))
 
 
@@ -364,7 +370,7 @@ def update():
     df = _pd.DataFrame()
     df.to_csv('dates_temp.csv')  # clear up cache
     global stocksss
-    stocksss = set(_os.listdir(datapath))  # set of stocks in database
+    stocksss = set(_os.listdir(datapath()))  # set of stocks in database
     last_update = getLastUpdate()
     days = _getBetweenDay(last_update)
     tasks = [asyncio.ensure_future(update_stock_list(day)) for day in days]  # async calling
@@ -403,7 +409,7 @@ def load_stock_list():
 
 def _is_global(): # resolve datapath scrope problem
     try:
-        type(datapath)
+        type(datapath())
         return True
     except NameError:
         return False
@@ -412,65 +418,93 @@ def _is_global(): # resolve datapath scrope problem
 def setup():
     """
     setup the database; this should be done before anything
+    choose the directory to place the database (~100M)
     """
     assert _is_global()==True
 
-    # setup AAPL and AMZN
+    # choose path for setup database
+    import PySimpleGUI as sg 
+    form_rows = [[sg.Text('Choose the setup path')],
+                 [sg.Text('Setup path: ', size=(15, 1)), sg.InputText(key='setup'), sg.FolderBrowse()],
+                 [sg.Submit(), sg.Cancel()]]
+    window = sg.Window('Choose a path for setup database')
+    _, values = window.Layout(form_rows).Read()
+    window.Close()
+    globals()['setup_path'] = values['setup'] # global setup_path
+    with open(_os.path.join(main_path, 'setup_cache.txt'), mode='w') as w:
+        w.write(setup_path) # setup cache for setup directory
+    # choose a specific path for database folder
+
+    # setup starts
     companies = ['AAPL', 'AMZN']
-    dirs = [_os.listdir(_os.path.join(datapath, c)) for c in companies]
+    [create_folder(i, setup_path, True) for i in companies]
+    dirs = [_os.listdir(_os.path.join(datapath(setup=False), c)) for c in companies]
     #if not('.csv' in dirs[0][2] and '.csv' in dirs[0][5]):
     dirs2 = dirs[:]
     del dirs
     try:
-        [dirs2[i].remove('__init__.py') for i in range(2)]
+        [dirs2[i].remove('__init__.py') for i in range(2)] # remove __init__.py
     except ValueError:
         pass
-    if '.py' in ''.join(dirs2[0])+''.join(dirs2[1]):
+    if '.py' in ''.join(dirs2[0])+''.join(dirs2[1]): # AAPL and AMZN
         # convert .py into .csv
-        [open_file(companies[c], dirs2[c][d], setup=True).to_csv(_os.path.join(datapath, companies[c], dirs2[c][d].split('.')[0]+'.csv'), index=False)
+        [open_file(companies[c], dirs2[c][d], setup=False).to_csv(_os.path.join(setup_path, companies[c], dirs2[c][d].split('.')[0]+'.csv'), index=False)
         for c in range(len(companies)) for d in range(len(dirs2[c])) if dirs2[c][d]!='__init__.py' and dirs2[c][d]!='__pycache__']
         
         # delete original .py files
-        [_os.remove(_os.path.join(datapath, companies[i], dirs2[i][j])) for i in range(len(companies)) for j in range(len(dirs2[i])) if dirs2[i][j]!='__init__.py' and ('.csv' not in dirs2[i][j]) and dirs2[i][j]!='__pycache__']
+        [_os.remove(_os.path.join(datapath(setup=False), companies[i], dirs2[i][j])) for i in range(len(companies)) for j in range(len(dirs2[i])) if dirs2[i][j]!='__init__.py' and ('.csv' not in dirs2[i][j]) and dirs2[i][j]!='__pycache__']
 
-    dirs_general2 = _os.listdir(_os.path.join(datapath, 'general'))
-    dirs_general = dirs_general2[:]
+    # setup general stock lists
+    dirs_general2 = _os.listdir(_os.path.join(datapath(setup=False), 'general'))
+    dirs_general = dirs_general2[:] # avoid mutable list
     del dirs_general2
     try:
-        dirs_general.remove('__init__.py')
+        dirs_general.remove('__init__.py') # list_dir for 'general'
     except ValueError:
         pass
     
-    if '.py' in ''.join(dirs_general):
+    if '.py' in ''.join(dirs_general): # NYSE and NASDAQ
         # setup stock_list general
-        exc = ['NYSE', 'NASDAQ']
-        [open_general(ex, setup=True).to_csv(_os.path.join(datapath, 'general', ex+'.csv'), index=False)
+        exc = ['NYSE', 'NASDAQ', 'SP100']
+        create_folder('general', setup_path, True)
+        [open_general(ex, setup=True).to_csv(_os.path.join(setup_path, 'general', ex+'.csv'), index=False)
          for ex in exc]
-        [_os.remove(_os.path.join(datapath, 'general', ex+'.py')) for ex in exc]
+        [_os.remove(_os.path.join(datapath(setup=False), 'general', ex+'.py')) for ex in exc]
 
-    if 'dates_temp.py' in _os.listdir(main_path):
-    # dates_temp.py
+    if 'dates_temp.py' in _os.listdir(main_path): # dates_temp
         _pd.read_csv(_os.path.join(main_path, 'dates_temp.py')).to_csv(_os.path.join(main_path, 'dates_temp.csv'), index=False)
         _os.remove(_os.path.join(main_path, 'dates_temp.py')) # delete original\
 
-    if 'datefile.py' in _os.listdir(main_path):
+    if 'datefile.py' in _os.listdir(main_path): # datefile
         with open(_os.path.join(main_path, 'datefile.py')) as d:
-            d = d.read()
+            d = d.read() # read
         with open(_os.path.join(main_path, 'datefile.txt'), mode='w') as w:
-            w.write(d)
-        _os.remove(_os.path.join(main_path, 'datefile.py'))
+            w.write(d) # write
+        _os.remove(_os.path.join(main_path, 'datefile.py')) # delete
         
     _gc.collect()
-    print("Database has been setup")
+    print("Database has been setup on path: {}".format(setup_path))
     
 
 def _is_active(names, sheets):
     if isinstance(names, str):
         names = [names]
-    return set(names).issubset(set(sheets))
+    return set(names).issubset(set(sheets)) # [] in [] regardless of order
 
 
-
+def datapath(setup=True):
+    """
+    The global datapath for all other file. It sets your selected path in jaqk.setup() as the main datapath, and all data will be added/deleted from there.
+    """
+    try:
+        with open(_os.path.join(main_path, 'setup_cache.txt')) as w:
+            path = w.read()
+        if setup==True:
+            return path
+        else:
+            return _os.path.join(_os.path.dirname(__file__), 'database')
+    except FileNotFoundError:
+        return _os.path.join(_os.path.dirname(__file__), 'database')
 
 
 

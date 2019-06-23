@@ -4,8 +4,6 @@ import gc as _gc
 # __author__=='Hanbo'
 # __version__=='0.0.1'
 
-# global datapath
-datapath = _os.path.join(_os.path.dirname(__file__), 'database')
 
 from .stock import financials, analysis, profile, prices
 # from .stock import financials
@@ -27,14 +25,24 @@ from .operations.Open import open_file
 #from .calculation import *
 from .calculations import rank
 from .factors import cash_flow, income, balance, key, stats
-from .get import update, getLastUpdate, main_get, load_stock_list, setup
+from .get import update, getLastUpdate, main_get, load_stock_list, setup, datapath
 
 from .operations.Path import path  # not tested
 
-from .test2 import test
+from .test2 import test # unittest
 
-
-if len(_os.listdir(datapath)) - 2 < 100:
+'''
+def datapath():
+    try:
+        from .get import setup_path
+        datapath = setup_path
+    except ImportError:
+        datapath = _os.path.join(_os.path.dirname(__file__), 'database')
+    return datapath
+'''
+    
+if len(_os.listdir(datapath())) - 2 < 100:
     print("There is not sufficient data in the database. Use main_get() to retrieve data")
+
 
 _gc.collect()

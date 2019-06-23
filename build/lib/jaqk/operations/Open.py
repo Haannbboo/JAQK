@@ -5,10 +5,23 @@ import gc as _gc
 
 from ..operations.Path import path as _path
 
-
 p = _os.path.abspath(_os.path.join(_os.path.dirname(__file__), _os.pardir))
-global datapath
-datapath = _os.path.join(p, 'database')
+# global datapath
+# datapath = _os.path.join(p, 'database')
+
+def datapath(setup=True):
+    """
+    The global datapath for all other file. It sets your selected path in jaqk.setup() as the main datapath, and all data will be added/deleted from there.
+    """
+    try:
+        with open(_os.path.join(p, 'setup_cache.txt')) as w:
+            path = w.read()
+        if setup==True:
+            return path
+        else:
+            return _os.path.join(p, 'database')
+    except FileNotFoundError:
+        return _os.path.join(p, 'database')
 
 
 def open_file(stock, name, setup=False):
@@ -18,15 +31,15 @@ def open_file(stock, name, setup=False):
     name - name of the sheet (e.g 'income' / 'balace'), use sheets_names() to see all names
     returns a csv sheet of the sheet of the company
     """
-    # datapath='/Users/hanbo/Desktop/ML/QA/JAQK/database/'
     if not isinstance(stock, str):
         raise TypeError("Parameter 'stock' should be a string, not a "
                         + type(stock).__name__)
-    if setup == True: # when setup, name is "AAPL_income.csv", not "income"
-        path = _os.path.join(datapath, stock, name)
+    if setup == True:  # when setup, name is "AAPL_income.csv", not "income"
+        path = _os.path.join(datapath(False), stock, name)
         df = _pd.read_csv(path)
         _gc.collect()
         return df
+    # not setup, normal open_file
     names = ['major_holders', 'top_institutional_holders', 'top_mutual_fund_holders',
              'Trading_Information', 'Financial_Highlights', 'Valuation_Measures',
              'Executives', 'Description',
@@ -37,17 +50,18 @@ def open_file(stock, name, setup=False):
              'balance', 'cash_flow', 'income']
     if name not in names:
         try:
-            name = _path(name) # when client mistakenly input factor instead of sheet name
+            name = _path(name)  # when client mistakenly input factor instead of sheet name
         except ValueError:
             raise ValueError(
-                'Parameter "name" should be the name of the financial sheets, not a factor name...Use path method to find the location of a factor')
-    path = _os.path.join(datapath, stock, stock)
+                'Parameter "name" should be the name of the financial sheets, not a factor name...Use path method to '
+                'find the location of a factor') 
+    path = _os.path.join(datapath(), stock, stock)
     try:
         df = _pd.read_csv(path + '_' + name + '.csv')
         _gc.collect()
     except FileNotFoundError:
         _gc.collect()
-        if _os.path.exists(_os.path.join(datapath, stock)):
+        if _os.path.exists(_os.path.join(datapath(), stock)):
             raise ValueError("There is no sheet - {} - for company {}. Use main_get to retrieve the sheet".format
                              (name, stock))
         else:
@@ -57,14 +71,16 @@ def open_file(stock, name, setup=False):
 
 def open_general(file, setup=False):
     try:
-        p = _os.path.join(datapath, 'general', file)
-        if setup==False:
+        if setup == False:
+            p = _os.path.join(datapath(), 'general', file)
             df = _pd.read_csv(p + '.csv')
-        elif setup==True:
+        elif setup == True:
+            p = _os.path.join(datapath(False), 'general', file)
             df = _pd.read_csv(p + '.py')
+        return df
     except Exception as e:
-        print("Something wrong in opening the stock list: "+str(e))
-    return df
+        print("Something wrong in opening the stock list: " + str(e))
+        return
 
 
 def open_dfs(ffactor):  # Not used yet, design for reduce IOs
