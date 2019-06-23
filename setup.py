@@ -9,8 +9,7 @@ def read(fname):
     try:
         return codecs.open(os.path.join(os.path.dirname(__file__), fname)).read()
     except FileNotFoundError:
-        return '0.0.1.3.3'
-    # 0.0.2.2.6
+        return '0.0.2.3'
 
 def install_requirements():
     reqs = [

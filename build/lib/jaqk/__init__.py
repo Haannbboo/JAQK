@@ -31,15 +31,6 @@ from .operations.Path import path  # not tested
 
 from .test2 import test # unittest
 
-'''
-def datapath():
-    try:
-        from .get import setup_path
-        datapath = setup_path
-    except ImportError:
-        datapath = _os.path.join(_os.path.dirname(__file__), 'database')
-    return datapath
-'''
     
 if len(_os.listdir(datapath())) - 2 < 100:
     print("There is not sufficient data in the database. Use main_get() to retrieve data")

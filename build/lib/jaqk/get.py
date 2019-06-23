@@ -265,7 +265,7 @@ def main_get(stocks='SP100', sheets='financials', batch=32):
                   'major_holders', 'top_institutional_holders', 'top_mutual_fund_holders']
     else:
         d = {'financials': ['income', 'cash_flow', 'balance'], 'key-statistics': ['Financial_Highlights', 'Valuation_Measures', 'Trading_Information'],
-             'summary': ['Sumary'], 'profile': ['Executives', 'Description'],
+             'summary': ['Summary'], 'profile': ['Executives', 'Description'],
              'analysis': ['Earnings_Estimate', 'Revenue_Estimate', 'Earnings_History', 'EPS_Trend', 'EPS_Revisions', 'Growth_Estimates'],
              'holders': ['major_holders', 'top_institutional_holders', 'top_mutual_fund_holders']}
         sheets = [d[i] for i in sheets] # map webpages to sheets
@@ -277,8 +277,6 @@ def main_get(stocks='SP100', sheets='financials', batch=32):
 
     if stocks == 'SP100': # S&P 100 <- default
         stocks = open_general('SP100')['Symbol'].tolist() # read csv
-        print("CUT")
-        input("CUT")
         main(stocks=stocks, sheets=sheets, batch=batch)
 
     elif stocks == 'ALL':
@@ -448,7 +446,7 @@ def setup():
         pass
     if '.py' in ''.join(dirs2[0])+''.join(dirs2[1]): # AAPL and AMZN
         # convert .py into .csv
-        [open_file(companies[c], dirs2[c][d], setup=False).to_csv(_os.path.join(setup_path, companies[c], dirs2[c][d].split('.')[0]+'.csv'), index=False)
+        [open_file(companies[c], dirs2[c][d], setup=True).to_csv(_os.path.join(setup_path, companies[c], dirs2[c][d].split('.')[0]+'.csv'), index=False)
         for c in range(len(companies)) for d in range(len(dirs2[c])) if dirs2[c][d]!='__init__.py' and dirs2[c][d]!='__pycache__']
         
         # delete original .py files
