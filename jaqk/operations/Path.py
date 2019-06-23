@@ -46,7 +46,7 @@ def path(factor):
     del trading
     financial = set(_pd.read_csv(_os.path.join(datapath(), 'AAPL', 'AAPL_Financial_Highlights.csv'))['0'].tolist())
     if factor in financial:
-        return 'Financial_Hightlights'
+        return 'Financial_Highlights'
     del financial
     valuation = set(_pd.read_csv(_os.path.join(datapath(), 'AAPL', 'AAPL_Valuation_Measures.csv'))['0'].tolist())
     if factor in valuation:

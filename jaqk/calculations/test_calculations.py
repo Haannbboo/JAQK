@@ -5,7 +5,7 @@ class test_calculations(_unittest.TestCase):
         # this take a hell long time
         from .rank import factor_percentile, percentile
         self.assertGreater(len(factor_percentile('Total Revenue', 'AAPL')), 3)
-        self.assertIsInstance(percentile('Total Assets', 80), list)
+        #self.assertIsInstance(percentile('Total Assets', 80), list)
         with self.assertRaises(TypeError):
             factor_percentile('Total Revenue', ['AAPL', 'AMZN'])
             factor_percentile(['Total Revenue', 'Gross Profit'], 'AAPL')
