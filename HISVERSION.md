@@ -29,3 +29,5 @@
 ###### 0.0.2.2.5 Jun.19th 2019
 - 9am, Jun.19th: Add parameter "sheets" to main_get(), enables downloading parts of data
 - 10am, Jun.19th: Add 'xlrd>=1.0.0' to setup
+##### 0.0.2.3 Jun.23th 2019
+- 4pm, Jun. 19th: Change main_get() default to S&P100; add client function jaqk.rank.best() and jaqk.rank.worst(); big structual change in jaqk.rank
