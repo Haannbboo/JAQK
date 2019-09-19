@@ -6,28 +6,24 @@ import gc as _gc
 
 
 from .stock import financials, analysis, profile, prices
-# from .stock import financials
+
 from .stock.profile import description as desc
 
 from .basics.stocks import stock_list
 
 from .factors.factors import get_factors
 
-from .operations.Save import save  # done
+from .operations.Save import save
 from .operations.Tools import (database_count, database_clear, factors_names,
-                               sheets_names, code_count)
+                               sheets_names, code_count, clean)
 from .operations.Open import open_file
-# from .operations.Open import open_general as _open_general
 
-
-# calculation.key.Beta is not done
-
-#from .calculation import *
 from .calculations import rank
 from .factors import cash_flow, income, balance, key, stats
 from .get import update, getLastUpdate, main_get, load_stock_list, setup, datapath
 
-from .operations.Path import path  # not tested
+
+from .operations.Path import path
 
 from .test2 import test # unittest
 

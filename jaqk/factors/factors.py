@@ -11,7 +11,6 @@ from ..operations.Format import year_convert
 
 
 def get_factors(companies, factors, year='NEWEST'):
-    # not handling year now
     """
     companies - list of companies
     factors - list of factors
@@ -28,10 +27,9 @@ def get_factors(companies, factors, year='NEWEST'):
                         + type(year).__name__)
     if isinstance(factors, list) and isinstance(year, list):
         if len(year) != 1 and len(factors) != 1 and len(companies) != 1:
-            raise ValueError(
-                "When you want sheet for multiple factors with multiple companies, only a specific year is supported")
+            raise ValueError("When you want sheet for multiple factors with multiple companies, only a specific year is supported")
     if year != True and year != 'NEWEST' and (year[0] not in [2015, 2016, 2017, 2018, 2019]):
-        raise TypeError("Parameter 'year' should be [int, int, ...] with int being a year")
+        raise TypeError("Parameter 'year' should be [int, int, ...] with int being a year, e.g [2018, 2017]")
     if isinstance(factors, str):
         factors = [factors]  # string - list
     paths = [_path(f) for f in factors]  # things below is for drop duplicates
@@ -41,13 +39,13 @@ def get_factors(companies, factors, year='NEWEST'):
             d[paths[i]] = [factors[i]]
         else:
             d[paths[i]] += [factors[i]]
-    # for c in companies:
-    #       a=_np.concatenate(tuple([_factor(_open_file(c, k), v, False) for k, v in d.items()]),
-    #                         axis = 1)
+
+
+    # handling multiple factors vs multiple years
     if year != 'NEWEST' and len(factors) > 1:
         if len(companies) != 1:
-            raise ValueError(
-                "When you want sheet for multiple factors with multiple years, only ONE specific company is supported")
+            raise ValueError("When you want sheet for multiple factors with multiple years, only ONE specific company is supported")
+
         a = _np.concatenate(tuple([_np.concatenate(
             [_factor(_open_file(companies[0], k), v, year) for k, v in d.items()]
         )]), axis=1)
@@ -56,6 +54,7 @@ def get_factors(companies, factors, year='NEWEST'):
             [_factor(_open_file(c, k), v, year) for k, v in d.items()]
         ), axis=1) for c in companies]))
 
+    # handling columns values for multiple years
     if year != 'NEWEST':
         # year=True or [2018, 2017]
         dff = _open_file(companies[0], list(d.keys())[0])
@@ -76,11 +75,9 @@ def get_factors(companies, factors, year='NEWEST'):
         df = _pd.DataFrame(a, index=companies)
         df.columns = factors
         return df
+    
     if len(factors) > 1 and len(years) > 1:
-        # multiple factors and 
+        # multiple factors and multiple years
         df = _pd.DataFrame(a, index=factors)
         df.columns = years
         return df
-
-    # problem here
-    # df.columns=factors # when only one factor is here, the columns name should be date rather than factors

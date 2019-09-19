@@ -1,7 +1,3 @@
-import os
-import pandas as pd
-
-
 from ..operations.Open import open_file as _open_file
 
 

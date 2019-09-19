@@ -2,6 +2,12 @@ import unittest as _unittest
 
 
 class test_basics(_unittest.TestCase):
+    """Test stock_list()
+
+    Tests:
+        correctness
+        raises
+    """
     def test_stocks(self):
         from .stocks import stock_list
         self.assertGreater(len(stock_list()), 6000)

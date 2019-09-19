@@ -36,23 +36,32 @@ def database_count():
     _gc.collect()
 
 
-def database_clear():
+def database_clear(path='datapath'):
     """
     clear all data in database (use cautiously)
     """
-    files = (i for i in _os.listdir(_datapath()))
+    if path=='datapath':
+        d = _datapath()
+    else:
+        d = path
+    files = (i for i in _os.listdir(d))
     for f in files: # file name
-        if f not in ['__init__.py', 'AAPL', 'AMZN', 'general', 'test']:
-            _os.remove(f)
-    f2 = _os.listdir(_datapath())
-    assert len(f2)<6
+        if f not in ['__init__.py', '.DS_Store', 'AAPL', 'AMZN', 'general', 'test']:
+            dd = _os.path.join(d, f)
+            try:
+                for ff in _os.listdir(dd):              
+                    _os.remove(_os.path.join(dd, ff))
+                _os.removedirs(dd)
+            except (NotADirectoryError, FileNotFoundError):
+                _os.remove(dd)
     print("Sucessfully clear all data in database")
+    _gc.collect()
 
 
 def database_reset():
     """
     reset database to the original state
-    automatically save the past database to database_cache
+    convert package database directory to its original state
     """
     pass
     
@@ -175,3 +184,12 @@ def code_count(what='lines', detail=False):
             return count_char
         else:
             return sum(count_char.values())
+
+def clean():
+    """
+    clear up the unused memory in IDE (trying to)
+    using gc.collect()
+    """
+    _gc.collect()
+
+

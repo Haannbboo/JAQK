@@ -4,20 +4,18 @@ from .profile import description
 import pandas as _pd
 
 
-class test_stocks(_unittest.TestCase):
+class test_stocks(_unittest.TestCase):  # test functions in folder stock
     def test_analysis(self):
-        
         f=lambda c: [EPS_Revisions(c), EPS_Trend(c),
                      Growth_Estimates(c), Revenue_Estimate(c),
                      Earnings_Estimate(c), Earnings_History(c)]
         self.assertEqual(len(f('AAPL')), 6)
         with self.assertRaises(ValueError):
-            f('adfjsiojda')
+            f('adfjsiojda')  # test if exception raised is correct
        
     def test_financials(self):
         df=stats('AAPL')
         self.assertIsInstance(df, _pd.core.frame.DataFrame)
-#        self.assertEqual(stats('aoidfjso'), "Something wrong with the data for stats for {}".format(stock))
         f=lambda c: {Valuation_Measures(c), Financial_Highlights(c),
                      Trading_Information(c), Cash_Flow(c),
                      Balance(c), Income(c)}
@@ -39,9 +37,6 @@ class test_stocks(_unittest.TestCase):
     def test_profile(self):
         f=lambda c: [Key_Executives(c), summary(c), description(c)]
         self.assertIsInstance(f('AAPL'), list)
-#        self.assertIsInstance(description('AAPL', 'zh'), str) # translation
-#        with self.assertRaisesRegex(KeyError, 'trans_result'):
-#            description('AAPL', 'ladkjsdlv')
         with self.assertRaises(ValueError):
             f('aoijdsoigjs')
             

@@ -17,9 +17,9 @@ def description(stock,language='en'):
     returns the description of the company in yahoo finance
     '''
     df=_open_file(stock, name='Description')
-    desc=df['Description'][0]
+    desc=df['Description'][0]  # get description
     if language!='en':
-        desc=_translate(desc,language)
+        desc=_translate(desc,language)  # translate
     return desc
 
 def summary(stock):

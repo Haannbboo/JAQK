@@ -55,24 +55,3 @@ def Total_Assets(stock):
     stock - company name (e.g AAPL for apple inc.)
     """
     return _factor(_open_file(stock, 'balance'), 'Total Assets')
-
-
-# the following will be used for the class-base module
-'''
-class balance():
-    def __init__(self,stock):
-        self.__stock=stock
-        self.__df=_open_file(stock,'balance')
-    def Total_Assets(self):
-        return _factor(self.__df, 'Total Assets')
-    def Accounts_Payable(self):
-        return _factor(self.__df, 'Accounts Payable')
-    def Long_Term_Debt(self):
-        return _factor(self.__df, 'Long Term Debt')
-    def Total_Liabilities(self):
-        return _factor(self.__df, 'Total Liabilities')
-    def Net_Tangible_Assets(self):
-        return _factor(self.__df, 'Net Tangible Assets')
-    def Total_Stockholder_Equity(self):
-        return _factor(self.__df, 'Total Stockholder Equity')
-'''

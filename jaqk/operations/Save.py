@@ -17,27 +17,37 @@ def datapath(setup=True):
 
 
 def save_file(df, stock, name, update=False):
+    """Main saver, save file to database
+
+    If it's for update, it will open the old sheet and concatenate
+    the new data into the correct columns.
+
+    Args:
+        df: pandas DataFrame to be saved
+        stock: str - which stock does df belongs to
+        name: str - which sheet is df
+        update: bool - identify if it's for update or not
+    """
     path = _os.path.join(datapath(), stock, stock) + '_' + name + '.csv'
 
     if not update:
         pass
     elif update:
         try:
-            d = _pd.read_csv(path)
+            d = _pd.read_csv(path)  # open old
             d = d[list(d)[1:]]
         except FileNotFoundError:
             d = _pd.DataFrame()
         try:
-            first = df.iloc[0:, 0]
+            first = df.iloc[0:, 0]  # first column
             df = _pd.concat([df[list(df)[1:]], d], axis=1)
             df = df.loc[:, ~df.columns.duplicated()]  # Drop duplicated column
         except Exception as e:
             print("Exception in save_file: " + str(e))
         try:
             columns_title = list(df)
-            # temp=columns_title.pop(0)
-            columns_title.sort(key=lambda x: x.split('/')[-1:-3:-1], reverse=True)  # Sort index by Y & M
-            # columns_title.insert(0, temp)
+            # Sort column by Year&Month
+            columns_title.sort(key=lambda x: x.split('/')[-1:-3:-1], reverse=True) 
             df = df.reindex(columns=columns_title)  # Swap columns
             df = _pd.concat((first, df), axis=1, ignore_index=False)
         except Exception as e:

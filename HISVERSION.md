@@ -31,3 +31,4 @@
 - 10am, Jun.19th: Add 'xlrd>=1.0.0' to setup
 ##### 0.0.2.3 Jun.23th 2019
 - 4pm, Jun. 19th: Change main_get() default to S&P100; add client function jaqk.rank.best() and jaqk.rank.worst(); big structual change in jaqk.rank
+- 8pm, Sep. 19th: Re-factorization. Add comments to code. 
