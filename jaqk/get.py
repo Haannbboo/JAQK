@@ -11,17 +11,16 @@ import time as _time
 from pyquery import PyQuery as _pq
 
 # Internal modules
-from .basics.stocks import stock_list
+# from .basics.stocks import stock_list
 
-from .getters.get_holders import get_major_holders, get_top_institutional_and_mutual_fund_holders
-from .getters.get_financials import get_stats, get_reports
-from .getters.get_profile import get_executives, get_description
-from .getters.get_analysis import get_analysis
-from .getters.get_summary import get_summary
+
+from .getters import *
 
 from .operations.Save import save_file, save_dfs, save_analysis
 from .operations.Folder import create_folder, exist
-from .operations.Open import open_file, open_general
+from .operations.Open import open_general, open_stock_list
+
+from .exceptions import GetterRequestError  # exceptions
 
 global main_path
 main_path = _os.path.abspath(_os.path.dirname(__file__))
@@ -43,8 +42,9 @@ async def getter(url, timeout=20, error=True, retry=0, cnt=0):
         if successfully requested, returns html information in string
         else, returns None
     """
-    if cnt >= retry:
-        return
+    if cnt > retry:
+        error = "Failed to request data from url {}".format(url)
+        raise GetterRequestError(error)
 
     UA = [
         'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 \
@@ -52,20 +52,21 @@ async def getter(url, timeout=20, error=True, retry=0, cnt=0):
     headers = {
         'User-Agent': UA[0],  # User agent
     }
-    
+
     try:
         # aiohttp client request session, asynchronous request library
         async with aiohttp.ClientSession(headers=headers, connector=aiohttp.TCPConnector(verify_ssl=False)) as session:
             r = await session.get(url, timeout=timeout)
             html = await r.text()
         error = False
-    except (aiohttp.ClientTimeout, aiohttp.ClientConnectionError):
-        error = True
-        
+    # except (aiohttp.ClientTimeout, aiohttp.ClientConnectionError) as e:
+    except asyncio.TimeoutError:
+        error = error
+
     if not error:
         return html
     else:  
-        await getter(url, timeout, error, cnt=cnt+1)  # retry
+        await getter(url, timeout, error=error, cnt=cnt+1)  # retry
 
 
 async def parse(c, names, sheets, update=False, exception=False):
@@ -180,7 +181,7 @@ async def parse(c, names, sheets, update=False, exception=False):
 
                 del html
                 await asyncio.sleep(0.27)
-            except Exception as e:
+            except IndexError as e:
                 if exception:
                     print(exception_msg.format('balance-sheet', c, e))
         if not exist(c, 'cash_flow', update) and _is_active('balance', sheets):
@@ -196,13 +197,13 @@ async def parse(c, names, sheets, update=False, exception=False):
                     print(exception_msg.format('cash-flow', c, e))
         _gc.collect()
     except Exception as e:
-        print("Exception on {}: ".format(c, e))
+        print("Exception on {}: {}".format(c, e))
 
 
 def get_all_stocks(exchange):  # Get all stocks required using the stock_list operation
     if not (exchange != 'NYSE' or exchange != 'NASDAQ' or exchange != True):
         raise ValueError("Exchange should be either NYSE or NASDAQ, not: '{}'".format(str(exchange)))
-    s = stock_list(exchange)['Symbol'].tolist()
+    s = open_stock_list(exchange)['Symbol'].tolist()
     return s
 
 
@@ -341,7 +342,10 @@ def getLastUpdate():  # get last update date of the database
 
 async def update_getter(day):  # util
     url = 'https://finance.yahoo.com/calendar/earnings?from=2019-05-12&to=2019-05-18&day={}'
-    html = await getter(url.format(day), timeout=15)
+    try:
+        html = await getter(url.format(day), timeout=25)
+    except GetterRequestError:
+        pass
     updates = [i.text()
                for i in _pq(html)('.simpTblRow a').items()
                ]
@@ -368,8 +372,9 @@ def update_all_days():
         print("Exception FileNotFoundError")
         
     updates = _pd.read_csv('dates_temp.csv', index_col=0).values.tolist()  # read dates
-    updates = set([i[j] for i in updates for j in range(len(i))])  
-    needs_update_list = list(updates.intersection(stocksss))  # set operation AND
+    updates = set([i[j] for i in updates for j in range(len(i))])
+    stocks = set(_os.listdir(datapath()))  # set of stocks already in database
+    needs_update_list = list(updates.intersection(stocks))  # set operation AND
     company_list_length = len(needs_update_list)
     print("Total update companies: {}".format(company_list_length))
     if company_list_length == 0:
@@ -396,17 +401,18 @@ def update():
     """
     df = _pd.DataFrame()
     df.to_csv('dates_temp.csv')  # clear up cache
-    global stocksss
-    stocksss = set(_os.listdir(datapath()))  # set of stocks already in database
+
     last_update = getLastUpdate()
     days = _getBetweenDay(last_update)  # days need to be checked
+    print("\nCollecting companies that need to be updated")
     tasks = [asyncio.ensure_future(update_stock_list(day)) for day in days]  # async loop
     temp = asyncio.get_event_loop()
     temp.run_until_complete(asyncio.wait(tasks))  # get companies that were updated in these days
     print("Company list retrieved")
+    print("\nUpdating these companies")
     update_all_days()  # set operation & main get loop
     with open('datefile.txt', mode='w') as d:
-        d.write(time.strftime('%Y-%m-%d', time.localtime(time.time())))  # update last update record
+        d.write(_time.strftime('%Y-%m-%d', _time.localtime(_time.time())))  # update last update record
     print("Update completed")
 
 
@@ -440,80 +446,6 @@ def _is_global():  # resolve datapath scrope problem
         return True
     except NameError:
         return False
-
-
-def setup():
-    """
-    setup the database; this should be done before anything;
-    choose the directory to place the database (~100M)
-    """
-    assert _is_global() == True
-
-    # choose a specific path for database folders
-    import PySimpleGUI as sg
-    form_rows = [[sg.Text('Choose the setup path')],
-                 [sg.Text('Setup path: ', size=(15, 1)), sg.InputText(key='setup'), sg.FolderBrowse()],
-                 [sg.Submit(), sg.Cancel()]]  # layout design
-    window = sg.Window('Choose a path for setup database')
-    _, values = window.Layout(form_rows).Read()  # callback
-    window.Close()
-    setup_path = values['setup']
-    with open(_os.path.join(main_path, 'setup_cache.txt'), mode='w') as w:
-        w.write(setup_path)  # setup cache file for setup directory
-
-    # setup starts
-    companies = ['AAPL', 'AMZN']
-    [create_folder(i, setup_path, True) for i in companies]  # create new folders
-    dirs = [_os.listdir(_os.path.join(datapath(setup=False), c)) for c in companies]
-    dirs2 = dirs[:]
-    del dirs
-    try:
-        [dirs2[i].remove('__init__.py') for i in range(2)]  # remove __init__.py
-    except ValueError:
-        pass
-    if '.py' in ''.join(dirs2[0]) + ''.join(dirs2[1]):  # AAPL and AMZN
-        # convert .py into .csv
-        [open_file(companies[c], dirs2[c][d], setup=True).to_csv(
-            _os.path.join(setup_path, companies[c], dirs2[c][d].split('.')[0] + '.csv'), index=False)
-         for c in range(len(companies)) for d in range(len(dirs2[c]))
-         if dirs2[c][d] != '__init__.py' and dirs2[c][d] != '__pycache__']
-
-        # delete original .py files
-        [_os.remove(_os.path.join(datapath(setup=False), companies[i], dirs2[i][j]))
-         for i in range(len(companies)) for j in range(len(dirs2[i]))
-         if dirs2[i][j] != '__init__.py' and ('.csv' not in dirs2[i][j]) and dirs2[i][j] != '__pycache__']
-
-    # setup general stock lists
-    dirs_general2 = _os.listdir(_os.path.join(datapath(setup=False), 'general'))
-    dirs_general = dirs_general2[:]  # avoid mutable list
-    del dirs_general2
-    try:
-        dirs_general.remove('__init__.py')  # list_dir for 'general'
-    except ValueError:
-        pass
-
-    if '.py' in ''.join(dirs_general):  # NYSE and NASDAQ
-        # setup stock_list general
-        exc = ['NYSE', 'NASDAQ', 'SP100']
-        create_folder('general', setup_path, True)
-        [open_general(ex, setup=True).to_csv(_os.path.join(setup_path, 'general', ex + '.csv'), index=False)
-         for ex in exc]
-        [_os.remove(_os.path.join(datapath(setup=False), 'general', ex + '.py')) for ex in exc]
-
-    if 'dates_temp.py' in _os.listdir(main_path):  # dates_temp
-        _pd.read_csv(_os.path.join(main_path, 'dates_temp.py')).to_csv(_os.path.join(main_path, 'dates_temp.csv'),
-                                                                       index=False)
-        _os.remove(_os.path.join(main_path, 'dates_temp.py'))  # delete original\
-
-    if 'datefile.py' in _os.listdir(main_path):  # datefile
-        with open(_os.path.join(main_path, 'datefile.py')) as d:
-            d = d.read()  # read
-        with open(_os.path.join(main_path, 'datefile.txt'), mode='w') as w:
-            w.write(d)  # write
-        _os.remove(_os.path.join(main_path, 'datefile.py'))  # delete
-
-    _gc.collect()
-    print("Database has been setup on path: {}".format(setup_path))
 
 
 def _is_active(names, sheets):

@@ -1,6 +1,7 @@
 import pandas as _pd
 import os as _os
 
+
 def datapath(setup=True):
     """
     The global datapath for all other file. It sets your selected path in jaqk.setup() as the main datapath, and all data will be added/deleted from there.
@@ -9,7 +10,7 @@ def datapath(setup=True):
     try:
         with open(_os.path.join(main_path, 'setup_cache.txt')) as w:
             path = w.read()
-        if setup==True:
+        if setup is True:
             return path
         else:
             return _os.path.join(main_path, 'database')

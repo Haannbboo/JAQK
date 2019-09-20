@@ -89,7 +89,7 @@ def best(Factor):
     return _np.array(df.idxmax(), dtype=str)  # df.idxmax()
 
 
-def worse(Factor):
+def worst(Factor):
     """Get the WORST performing company of a factor.
 
     Args:
@@ -153,6 +153,8 @@ def _percentile_core(Factor, diff=None, update=False):
     Raises:
         ValueError: check if Factor is in either database or calculations.
     """
+    # NOT STABLE YET; EMPTY STACK OCCURS OCCASIONALY
+
     flag = False
     # _factor_dic: all calculated factors that are not in the original csv sheets
     _factor_dic = {'FCF': 'cash_flow', 'IC': 'balance', 'NIBCLS': 'balance', 'Invested_Book_Capital': 'balance'}
@@ -240,10 +242,11 @@ def _write_error(i):
     """
     path = _os.path.join(_datapath(), 'general', 'error_cache.txt')
     try:
-        f = set(open(path).readlines())
+        with open(path) as w:
+            f = set(w.readlines())
     except FileNotFoundError:
         f = set()
-    f.update(set([i]))
+    f.update({i})  # update as set([i])
     with open(path, 'w') as e:
         e.write('\n'.join(f))
 

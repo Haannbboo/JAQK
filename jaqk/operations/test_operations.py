@@ -5,7 +5,7 @@ from .Open import open_file as _open_file
 import os as _os
 import pandas as _pd
 
-
+from ..exceptions import TransInternetError
 
 class test_operations(_unittest.TestCase):
     def test_Folder(self):
@@ -41,7 +41,7 @@ class test_operations(_unittest.TestCase):
         t = _factor(df, 'Total Revenue')
         self.assertGreaterEqual(len(t), 4)
         self.assertIsInstance(t, _np.ndarray)
-        (self.assertEqual(_factor(df, 'Others')[i], 0) for i in range(len(t)))
+        (self.assertEqual(_factor(df, 'Others')[_], 0) for _ in range(len(t)))
 
         t = _factor(df, 'Total Revenue', year='NEWEST')  # newest year
         self.assertEqual(len(t), 1)
@@ -92,7 +92,9 @@ class test_operations(_unittest.TestCase):
         self.assertIsInstance(bb, _np.ndarray)
 
     def test_Open(self):
-        from .Open import open_file
+
+        # Test open_file
+        from .Open import open_file, open_general, open_stock_list
         df = open_file('AAPL', 'income')
         self.assertIsInstance(df, _pd.core.frame.DataFrame)
         self.assertGreaterEqual(len(list(df)), 5)
@@ -110,25 +112,45 @@ class test_operations(_unittest.TestCase):
         self.assertGreaterEqual(len(list(df)), 16)
         self.assertEqual(df.Stock.tolist(), ['AAPL'])
 
-        with self.assertRaises((ValueError, FileNotFoundError, TypeError)):
-            open_file('AAPL', '09ioijv')
+        with self.assertRaises(ValueError):
             open_file('psldnld', 'vjsdf')
+            open_file('AAPL', '09ioijv')
+        with self.assertRaises(TypeError):
             open_file(['AAPL', 'AMZN'], 'income')
             open_file(12234, 'income')
 
-        from .Open import open_general
+
+        # Test open_general
         self.assertGreaterEqual(len(open_general('NASDAQ')), 3000)
         self.assertGreaterEqual(len(open_general('NYSE')), 3000)
 
+        # Test open_stock_list
+        df = open_stock_list(True)
+        self.assertGreater(len(df), 6529)  # 6531 in total
+        self.assertGreater(len(df['Symbol']), 6529)
+        self.assertIn('XOM', df['Symbol'].values)
+        self.assertLessEqual(len(open_stock_list('NASDAQ')), 3500)
+        with self.assertRaises(ValueError):
+            open_stock_list(False)
+            open_stock_list('ABCDE')
+            open_stock_list([1, 2, 3])
+
     def test_Path(self):
-        from .Path import path
+        from .Path import path, datapath
+
+        # Test path
         self.assertEqual(path('Total Revenue'), 'income')
         self.assertEqual(path('price_daily'), 'price_daily')
         with self.assertRaises(ValueError):
-            path('notindatabase')
+            path('sthnotindatabase')
+
+        # Test datapath
+        pass
 
     def test_Save(self):
-        from .Save import save_file
+        from .Save import save_file, save
+
+        # Test save_file
         from .Open import open_file
         df = _pd.DataFrame([['a', 1, 2], ['b', 2, 3], ['c', 5, 6], ['d', 10, 11]])  # setup
         df.columns = ['Statements', '01/01/2018', '02/01/2017']
@@ -144,8 +166,8 @@ class test_operations(_unittest.TestCase):
         self.assertEqual(list(df)[1], '03/01/2019')
         self.assertEqual(df.iloc[0:-1, 1][0], 12)
 
-        from .Save import save
-        from ..get import datapath
+        # Test save
+        from .Path import datapath
         with self.assertRaises(ValueError):
             save(df, 'name', 'csv', test=True)  # '.csv'
         save(df, 'testClientSave', test=True)
@@ -173,4 +195,13 @@ class test_operations(_unittest.TestCase):
         self.assertGreaterEqual(code_count('chars'), 62888)
 
         # not testing database_clear() now
-        
+
+    def test_Trans(self):
+        from .Trans import _translate
+        try:
+            self.assertEqual(_translate('hello world'), 'hello world')
+            self.assertEqual(_translate('hello world', t='zh'), '你好世界')
+        except TransInternetError:
+            warn = "Translation failed because of poor internet connection. Check your internet pleases."
+            raise Warning(warn)
+

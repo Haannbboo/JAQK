@@ -1,26 +1,13 @@
 import os as _os
 import pandas as _pd
 
-p = _os.path.abspath(_os.path.join(_os.path.dirname(__file__), _os.pardir))
-# global datapath
-# datapath = _os.path.join(p, 'database')
-def datapath(setup=True):
-    try:
-        with open(_os.path.join(p, 'setup_cache.txt')) as w:
-            path = w.read()
-        if setup==True:
-            return path
-        else:
-            return _os.path.join(p, 'database')
-    except FileNotFoundError:
-        return _os.path.join(p, 'database')
+from .Path import datapath
 
 
 def save_file(df, stock, name, update=False):
     """Main saver, save file to database
 
-    If it's for update, it will open the old sheet and concatenate
-    the new data into the correct columns.
+    If it's for update, it will open the old sheet and concatenate new data into the correct columns.
 
     Args:
         df: pandas DataFrame to be saved
@@ -86,18 +73,18 @@ def save(df, name, file_type='.csv', mode='w', prt=True, test=False):
     form_rows = [[sg.Text('Choose the save path')],
                  [sg.Text('Save path: ', size=(15, 1)), sg.InputText(key='save'), sg.FolderBrowse()],
                  [sg.Submit(), sg.Cancel()]]
-    if test == False:
+    if test is False:
         window = sg.Window('Save to path')
         _, values = window.Layout(form_rows).Read()
         window.Close()
         path = values['save']
-    elif test == True:
+    elif test is True:
         window = sg.Window('Save to path')
         window.Close()
         path = _os.path.join(datapath(False), 'test')
     # path=values['save']
-    if path == '' or None:
-        print("You didn't choose a path for saving...")
+    if path == '' or path is None:
+        print("You didn't choose a path for saving... Please choose one.")
         return
     try:
         p = _os.path.join(path, name + file_type)
@@ -106,4 +93,4 @@ def save(df, name, file_type='.csv', mode='w', prt=True, test=False):
         print("Exception in client saver: " + str(e))
         return
     if prt and (not test):
-        print("Saved dataframe to " + p)
+        print("Saved data sheet to " + p)

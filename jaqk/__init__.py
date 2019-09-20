@@ -9,19 +9,18 @@ from .stock import financials, analysis, profile, prices
 
 from .stock.profile import description as desc
 
-from .basics.stocks import stock_list
-
 from .factors.factors import get_factors
 
 from .operations.Save import save
 from .operations.Tools import (database_count, database_clear, factors_names,
                                sheets_names, code_count, clean)
-from .operations.Open import open_file
+from .operations.Open import open_file, open_stock_list
 
-from .calculations import rank
+from .calculations import *
 from .factors import cash_flow, income, balance, key, stats
-from .get import update, getLastUpdate, main_get, load_stock_list, setup, datapath
+from .get import update, getLastUpdate, main_get, load_stock_list, datapath
 
+from .setup import setup
 
 from .operations.Path import path
 
