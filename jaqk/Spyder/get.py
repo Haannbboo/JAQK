@@ -1,6 +1,5 @@
 # asynchronous coroutine
 import asyncio
-import aiohttp
 
 import datetime as _dtime
 import gc as _gc
@@ -11,62 +10,19 @@ import time as _time
 from pyquery import PyQuery as _pq
 
 # Internal modules
-# from .basics.stocks import stock_list
+from .parsers import *
+from .getter import getter
 
+from ..operations.Save import save_file, save_dfs, save_analysis
+from ..operations.Folder import create_folder, exist
+from ..operations.Open import open_general, open_stock_list
+from ..operations.Path import datapath
+from ..operations.Tools import sheet_names
 
-from .getters import *
-
-from .operations.Save import save_file, save_dfs, save_analysis
-from .operations.Folder import create_folder, exist
-from .operations.Open import open_general, open_stock_list
-
-from .exceptions import GetterRequestError  # exceptions
+from ..exceptions import GetterRequestError  # exceptions
 
 global main_path
 main_path = _os.path.abspath(_os.path.dirname(__file__))
-
-
-async def getter(url, timeout=20, error=True, retry=0, cnt=0):
-    """Main get function for most the website crawler
-
-    It uses asynchronous coroutine and asynchronous request sessions (aiohttp)
-
-    Args:
-        url: str - target url
-        timeout: int - timeout set for each request, default 10 second (recommend >10)
-        error: bool - Recursive error handler, identify state of request
-        retry: int - time of retry
-        cnt: int - count time of retry
-
-    Returns:
-        if successfully requested, returns html information in string
-        else, returns None
-    """
-    if cnt > retry:
-        error = "Failed to request data from url {}".format(url)
-        raise GetterRequestError(error)
-
-    UA = [
-        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 \
-        Safari/537.36',]
-    headers = {
-        'User-Agent': UA[0],  # User agent
-    }
-
-    try:
-        # aiohttp client request session, asynchronous request library
-        async with aiohttp.ClientSession(headers=headers, connector=aiohttp.TCPConnector(verify_ssl=False)) as session:
-            r = await session.get(url, timeout=timeout)
-            html = await r.text()
-        error = False
-    # except (aiohttp.ClientTimeout, aiohttp.ClientConnectionError) as e:
-    except asyncio.TimeoutError:
-        error = error
-
-    if not error:
-        return html
-    else:  
-        await getter(url, timeout, error=error, cnt=cnt+1)  # retry
 
 
 async def parse(c, names, sheets, update=False, exception=False):
@@ -207,7 +163,7 @@ def get_all_stocks(exchange):  # Get all stocks required using the stock_list op
     return s
 
 
-def main(stocks, sheets, update=False, batch=64, exception=False):
+def main(stocks='SP100', sheets='financials', batch=32, update=False, exception=False):
     """Main asynchronous coroutine loop.
 
     It creates async tasks and put them into async loop for parse() and prints out the progress.
@@ -225,19 +181,51 @@ def main(stocks, sheets, update=False, batch=64, exception=False):
     Raises:
         TypeError: check if param stocks is a list
     """
-    if stocks in ['NYSE', 'NASDAQ']:  # load all stocks if needed
-        stocks = get_all_stocks(stocks)
+    name = stocks
+    if stocks not in ['NYSE', 'NASDAQ', 'ALL', 'SP100'] and isinstance(stocks, str):
+        # when stocks is nonesense
+        t = type(stocks)
+        if len(stocks) > 10:
+            stocks = str(stocks[0:4] + ['......'] + stocks[-2:])
+        raise ValueError("Parameter 'stocks' should be one of SP100, NYSE, NASDAQ, and ALL, not {} object: {}"
+                         .format(t.__name__, str(stocks)))
+    if len(stocks) == 0:  # empty list
+        raise ValueError("Parameter 'stocks' must have something in it.")
+
+    if isinstance(sheets, str):
+        sheets = [sheets]  # str - list
+    if update is False:
+        for i in sheets:  # avoid typo
+            if i not in ['financials', 'key-statistics', 'summary', 'profile', 'analysis', 'holders', 'ALL']:
+                msg = "Parameter 'sheets' should come from: financials, key-statistics, summary, profile, analysis, " \
+                    "holders, not {} "
+                raise ValueError(msg.format(i))
+        if sheets[0] == 'ALL':
+            sheets = sheet_names()  # all sheets
+        else:
+            d = {'financials': ['income', 'cash_flow', 'balance'],
+                'key-statistics': ['Financial_Highlights', 'Valuation_Measures', 'Trading_Information'],
+                'summary': ['Summary'], 'profile': ['Executives', 'Description'],
+                'analysis': ['Earnings_Estimate', 'Revenue_Estimate', 'Earnings_History', 'EPS_Trend', 'EPS_Revisions',
+                            'Growth_Estimates'],
+                'holders': ['major_holders', 'top_institutional_holders', 'top_mutual_fund_holders']}
+            sheets = [d[i] for i in sheets]  # map webpages to sheets
+            sheets = [i[j] for i in sheets for j in range(len(i))]  # squeeze
+    elif update is True:
+        sheets = sheets  # when update, sheet=['income', 'balance', etc.], not 'financials'
+    print("Get includes: {}".format(str(sheets)))
+
+    with open(_os.path.join(main_path, 'get_sheets_cache.txt'), 'w') as w:
+        w.write(','.join(sheets))  # save param sheets to cache for update() to use
+
+    if stocks in ['NYSE', 'NASDAQ']:
+        stocks = get_all_stocks(stocks)  # NASDAQ or NYSE
+    if stocks == 'SP100':  # SP100 - defaul
+        stocks = open_general('SP100')['Symbol'].tolist()  # read csv
     if not isinstance(stocks, list):
         raise TypeError('Parameter stocks should be a list, not a '+type(stocks).__name__)
 
-    NAMES = ['major_holders', 'top_institutional_holders', 'top_mutual_fund_holders',
-             'Trading_Information', 'Financial_Highlights', 'Valuation_Measures',
-             'Executives', 'Description',
-             'Earnings_Estimate', 'Revenue_Estimate', 'Earnings_History',
-             'EPS_Trend', 'EPS_Revisions', 'Growth_Estimates',
-             'stats', 'statements', 'reports',
-             'Executives', 'Description', 'analysis', 'Summary',
-             'income', 'balance', 'cash_flow']  # things that'll be updated
+    NAMES = sheet_names()  # things that'll be updated
 
     len_temp = int(len(stocks))
     if len_temp < batch:
@@ -251,63 +239,7 @@ def main(stocks, sheets, update=False, batch=64, exception=False):
         loop.run_until_complete(asyncio.wait(tasks))  # async main loop
         t2 = _time.time()
         print('{}/{} - Total Time: {}s'.format(str(i + batch), str(len(stocks)), str(t2 - t1)))
-
-
-def main_get(stocks='SP100', sheets='financials', batch=32, exception=False):
-    """
-    Main getter for client, MUST be runned after installation of the package (default update all stocks in NYSE and NASDAQ)
-    stocks - str - default SP100, can be ALL, NYSE, NASDAQ, list of tickets, load_stock_list() (for client only)
-    sheets - list/str - default financials (income, balance, cash_flow), use "ALL" to indicate all sheets; choices include: financials, key-statistics, summary, profile, analysis, holders
-    batch - default 32, batch size for loop (recommend to change based on interest status)
-    """
-    if stocks not in ['NYSE', 'NASDAQ', 'ALL', 'SP100'] and isinstance(stocks, str):
-        # when stocks is nonesense
-        t = type(stocks)
-        if len(stocks) > 10:
-            stocks = str(stocks[0:4] + ['......'] + stocks[-2:])
-        raise ValueError("Parameter 'stocks' should be one of SP100, NYSE, NASDAQ, and ALL, not {} object: {}"
-                         .format(t.__name__, str(stocks)))
-    if len(stocks) == 0:  # empty list
-        raise ValueError("Parameter 'stocks' must have something in it.")
-
-    if isinstance(sheets, str):
-        sheets = [sheets]  # str - list
-    for i in sheets:  # avoid typo
-        if i not in ['financials', 'key-statistics', 'summary', 'profile', 'analysis', 'holders', 'ALL']:
-            msg = "Parameter 'sheets' should come from: financials, key-statistics, summary, profile, analysis, holders, not {}"
-            raise ValueError(msg.format(i))
-    if sheets[0] == 'ALL':
-        sheets = ['income', 'cash_flow', 'balance', 'Financial_Highlights', 'Valuation_Measures', 'Trading_Information',
-                  'Sumary', 'Executives', 'Description', 'Earnings_Estimate', 'Revenue_Estimate', 'Earnings_History',
-                  'EPS_Trend', 'EPS_Revisions', 'Growth_Estimates',
-                  'major_holders', 'top_institutional_holders', 'top_mutual_fund_holders']
-    else:
-        d = {'financials': ['income', 'cash_flow', 'balance'],
-             'key-statistics': ['Financial_Highlights', 'Valuation_Measures', 'Trading_Information'],
-             'summary': ['Summary'], 'profile': ['Executives', 'Description'],
-             'analysis': ['Earnings_Estimate', 'Revenue_Estimate', 'Earnings_History', 'EPS_Trend', 'EPS_Revisions',
-                          'Growth_Estimates'],
-             'holders': ['major_holders', 'top_institutional_holders', 'top_mutual_fund_holders']}
-        sheets = [d[i] for i in sheets]  # map webpages to sheets
-        sheets = [i[j] for i in sheets for j in range(len(i))]  # squeeze
-    print("Get includes: ......")
-    print(str(sheets))
-    with open(_os.path.join(main_path, 'get_sheets_cache.txt'), 'w') as w:
-        w.write(','.join(sheets))  # save param sheets to cache for update() to use
-    if stocks == 'SP100':  # S&P 100 <- default
-        stocks = open_general('SP100')['Symbol'].tolist()  # read csv
-        main(stocks=stocks, sheets=sheets, batch=batch, exception=exception)
-
-    elif stocks == 'ALL':
-        main(stocks='NYSE', sheets=sheets, batch=batch, exception=exception)
-        print("Updated NYSE data")
-        main(stocks='NASDAQ', sheets=sheets, batch=batch, exception=exception)
-        print("Updated NASDAQ data")
-    else:
-        main(stocks=stocks, sheets=sheets, batch=batch, exception=exception)  # updated for sheets
-        if len(stocks) > 10:
-            stocks = str(stocks[0:4] + ['......'] + stocks[-2:])  # avoid printing too much
-        print("Updated all data for" + str(stocks))
+    print('Data collection for {} completed'.format(name))
 
 
 def _getBetweenDay(begin_date):
@@ -342,15 +274,17 @@ def getLastUpdate():  # get last update date of the database
 
 async def update_getter(day):  # util
     url = 'https://finance.yahoo.com/calendar/earnings?from=2019-05-12&to=2019-05-18&day={}'
+
     try:
         html = await getter(url.format(day), timeout=25)
     except GetterRequestError:
+        html = None
+    try:
+        updates = [i.text() for i in _pq(html)('.simpTblRow a').items()]
+        df = _pd.DataFrame(updates)
+        df.to_csv('dates_temp.csv', mode='a', header=False)  # csv of firms
+    except TypeError:
         pass
-    updates = [i.text()
-               for i in _pq(html)('.simpTblRow a').items()
-               ]
-    df = _pd.DataFrame(updates)
-    df.to_csv('dates_temp.csv', mode='a', header=False)  # csv of firms
 
 
 # problem: the connection between async and normal functions
@@ -376,7 +310,7 @@ def update_all_days():
     stocks = set(_os.listdir(datapath()))  # set of stocks already in database
     needs_update_list = list(updates.intersection(stocks))  # set operation AND
     company_list_length = len(needs_update_list)
-    print("Total update companies: {}".format(company_list_length))
+    print("Total update companies: {}\n".format(company_list_length))
     if company_list_length == 0:
         return
     try:
@@ -468,20 +402,3 @@ def _progress_print(t, msg='main_get'):
         w.write(str(n + 1))
     eta = str(_dtime.timedelta(seconds=round((total - n // 10 * 10) * t)))
     print(msg.format(n, total, eta), end='')
-
-
-def datapath(setup=True):
-    """
-    The global datapath for all other file.
-    It sets your selected path in jaqk.setup() as the main datapath,
-    and all data will be added/deleted from there.
-    """
-    try:
-        with open(_os.path.join(main_path, 'setup_cache.txt')) as w:
-            path = w.read()
-        if setup == True:
-            return path
-        else:
-            return _os.path.join(_os.path.dirname(__file__), 'database')
-    except FileNotFoundError:
-        return _os.path.join(_os.path.dirname(__file__), 'database')

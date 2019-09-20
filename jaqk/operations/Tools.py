@@ -64,7 +64,6 @@ def database_reset():
     convert package database directory to its original state
     """
     pass
-    
 
 
 def factors_names(sheet=None):
@@ -83,7 +82,7 @@ def factors_names(sheet=None):
             _pd.read_csv(_os.path.join(_datapath(), 'AAPL', 'AAPL_Summary.csv')))[1:]
         r = _np.array(r, dtype='str')
     else:
-        if sheet not in sheets_names():
+        if sheet not in sheet_names():
             raise ValueError('Parameter sheet is wrong, use sheets_names() to find all sheets names')
         file = 'AAPL_{}.csv'.format(sheet)
         if sheet == 'Summary':
@@ -94,7 +93,7 @@ def factors_names(sheet=None):
     return r
 
 
-def sheets_names():
+def sheet_names():
     """
     returns a list of ALL sheets names (not all companies have all of them)
     """

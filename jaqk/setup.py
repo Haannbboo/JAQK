@@ -64,12 +64,12 @@ def setup():
          for ex in exc]
         [_os.remove(_os.path.join(datapath(setup=False), 'general', ex + '.py')) for ex in exc]
 
-    if 'dates_temp.py' in _os.listdir(main_path):  # dates_temp
+    if 'dates_temp.py' in _os.listdir(_os.path.join(main_path, 'Spyder')):  # dates_temp
         _pd.read_csv(_os.path.join(main_path, 'dates_temp.py')).to_csv(_os.path.join(main_path, 'dates_temp.csv'),
                                                                        index=False)
         _os.remove(_os.path.join(main_path, 'dates_temp.py'))  # delete original\
 
-    if 'datefile.py' in _os.listdir(main_path):  # datefile
+    if 'datefile.py' in _os.listdir(_os.path.join(main_path, 'Spyder')):  # datefile
         with open(_os.path.join(main_path, 'datefile.py')) as d:
             d = d.read()  # read
         with open(_os.path.join(main_path, 'datefile.txt'), mode='w') as w:

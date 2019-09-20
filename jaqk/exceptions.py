@@ -6,8 +6,25 @@ class JAQKException(Exception):
         self.sheet = kwargs.pop('sheet', None)
         super(JAQKException, self).__init__(*args, **kwargs)
 
+    
+'''
+class JAQKCheck(object):
+
+    def __init__(self, sample, target):
+        self.sample = sample
+        self.target = target
+
+    def TypeCheck(self):
+        if self.sample isinstance(sample, target)
+    def ValueCheck(self):
+        pass
+    def FileNotFoundCheck(self):
+        pass
+'''
+
 # Huge potential later
 # All exceptions and "checking" will come from here
+
 
 class GetterRequestError(JAQKException):
     pass
