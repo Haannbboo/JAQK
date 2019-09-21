@@ -113,3 +113,13 @@ def get_summary(html, stock):
     df = pd.DataFrame(data)
     df.columns = columns
     return df
+
+
+# Update page
+def get_update(html):
+    try:
+        updates = [i.text() for i in pq(html)('.simpTblRow a').items()]
+        df = pd.DataFrame(updates)
+        df.to_csv('dates_temp.csv', mode='a', header=False)  # csv of firms
+    except TypeError:
+        pass
