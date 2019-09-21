@@ -70,11 +70,11 @@ def setup():
         _os.remove(_os.path.join(main_path, 'dates_temp.py'))  # delete original\
 
     if 'datefile.py' in _os.listdir(_os.path.join(main_path, 'Spyder')):  # datefile
-        with open(_os.path.join(main_path, 'datefile.py')) as d:
+        with open(_os.path.join(main_path, 'Spyder', 'datefile.py')) as d:
             d = d.read()  # read
-        with open(_os.path.join(main_path, 'datefile.txt'), mode='w') as w:
+        with open(_os.path.join(main_path, 'Spyder', 'datefile.txt'), mode='w') as w:
             w.write(d)  # write
-        _os.remove(_os.path.join(main_path, 'datefile.py'))  # delete
+        _os.remove(_os.path.join(main_path, 'Spyder', 'datefile.py'))  # delete
 
     _gc.collect()
     print("Database has been setup on path: {}".format(setup_path))
