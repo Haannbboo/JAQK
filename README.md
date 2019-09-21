@@ -1,4 +1,4 @@
-# Welcome to JAQK financial report package
+# Welcome to JAQK financial data module
 > A light and useful toolkit developed for financial report getter and basic analysis and calculations.
 
 > It starts with an assignment, proceeds with deadlines, and grows with passions. - Hanbo Guo
@@ -12,7 +12,7 @@ _Contact: hbopublic@163.com_
 
 ## What's this
 
-**JAQK** is a Python tookit providing light and robust data collection and data processing for quantitative analysis for US stocks. JAQK aims to tackle the problem of gathering financial data for high school students, and we hope JAQK can help some basic level of quantitative analysis. 
+**JAQK** is a Python tookit providing light and robust **data collection** and **data processing** for quantitative analysis for US stocks. JAQK aims to tackle the problem of gathering financial data for **high school students**, and we hope JAQK can help basic level of quantitative analysis. 
 
 ## Installations
 For quick installation with **PyPI**:
