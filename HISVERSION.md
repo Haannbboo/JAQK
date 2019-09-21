@@ -33,3 +33,4 @@
 - 4pm, Jun. 19th: Change main_get() default to S&P100; add client function jaqk.rank.best() and jaqk.rank.worst(); big structual change in jaqk.rank
 - 8pm, Sep. 19th: Re-factorization. Add comments to code. 
 - 11am, Sep.20th: Add exceptionn.py, move setup() from get.py to setup.py, delete basic folder (moved to operations.Open), minor optimization and bug fix.
+- 3pm, Sep. 21st: Reformat Web Spyder folder.
