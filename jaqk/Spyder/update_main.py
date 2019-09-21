@@ -15,9 +15,6 @@ from ..operations.Path import datapath
 
 from ..exceptions import GetterRequestError  # exceptions
 
-global main_path
-main_path = _os.path.abspath(_os.path.dirname(__file__))
-
 
 def _get_between_days(begin_date):
     """Get dates between two days using datatime.timedelta
@@ -44,7 +41,7 @@ def get_last_update():  # get last update date of the database
     get last update time
     prints out the date and returns the date(str)
     """
-    last_update = open(_os.path.join(main_path, 'datefile.txt')).readlines()[0]
+    last_update = open(datapath(False, 'Spyder', 'datefile.txt')).readlines()[0]
     print("Last update time: " + last_update)
     return last_update
 
@@ -72,14 +69,14 @@ async def update_getter(day):  # util
 def update_all_days():
     # Get updated-needed firms and perform updates
     try:
-        with open(_os.path.join(main_path, 'get_sheets_cache.txt'), mode='r') as w:
+        with open(datapath(False, 'get_sheets_cache.txt'), mode='r') as w:
             sheets = w.read().split(',')  # read parameter sheets
     except FileNotFoundError:
         print("Exception FileNotFoundError")
         
     updates = _pd.read_csv('dates_temp.csv', index_col=0).values.tolist()  # read dates
     updates = set([i[j] for i in updates for j in range(len(i))])
-    stocks = set(_os.listdir(datapath()))  # set of stocks already in database
+    stocks = set(_os.listdir(datapath(True)))  # set of stocks already in database
     needs_update_list = list(updates.intersection(stocks))  # set operation AND
     company_list_length = len(needs_update_list)
     print("Total update companies: {}\n".format(company_list_length))
@@ -150,13 +147,13 @@ def _progress_print(t, msg='main_get'):
     if msg == 'main_get':
         msg = '\r Retrieving data from Yahoo Finance: {} / {} - eta {}s'
     total = 87152
-    with open(_os.path.join(datapath(False), 'cnt.txt')) as r:
+    with open(datapath(False, 'cnt.txt')) as r:
         n = r.read()
         if n == '':
             n = 0
         else:
             n = int(n)
-    with open(_os.path.join(datapath(False), 'cnt.txt'), 'w') as w:
+    with open(datapath(False, 'cnt.txt'), 'w') as w:
         w.write(str(n + 1))
     eta = str(_dtime.timedelta(seconds=round((total - n // 10 * 10) * t)))
     print(msg.format(n, total, eta), end='')

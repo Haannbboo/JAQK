@@ -1,16 +1,18 @@
 import unittest as _unittest
-# import os as _os
+
 import numpy as _np
 from .Open import open_file as _open_file
 import os as _os
 import pandas as _pd
 
 from ..exceptions import TransInternetError
+from .Path import datapath
+
 
 class test_operations(_unittest.TestCase):
     def test_Folder(self):
-        from .Folder import create_folder, p
-        path = _os.path.join(p, 'operations')
+        from .Folder import create_folder
+        path = datapath(False, 'operations')
         orig = _os.listdir(path)
         x = len(orig)
         if 'test_folder' not in orig:
@@ -41,7 +43,7 @@ class test_operations(_unittest.TestCase):
         t = _factor(df, 'Total Revenue')
         self.assertGreaterEqual(len(t), 4)
         self.assertIsInstance(t, _np.ndarray)
-        (self.assertEqual(_factor(df, 'Others')[_], 0) for _ in range(len(t)))
+        (self.assertEqual(_factor(df, 'Others')[i], 0) for i in range(len(t)))
 
         t = _factor(df, 'Total Revenue', year='NEWEST')  # newest year
         self.assertEqual(len(t), 1)
@@ -119,7 +121,6 @@ class test_operations(_unittest.TestCase):
             open_file(['AAPL', 'AMZN'], 'income')
             open_file(12234, 'income')
 
-
         # Test open_general
         self.assertGreaterEqual(len(open_general('NASDAQ')), 3000)
         self.assertGreaterEqual(len(open_general('NYSE')), 3000)
@@ -141,6 +142,7 @@ class test_operations(_unittest.TestCase):
         # Test path
         self.assertEqual(path('Total Revenue'), 'income')
         self.assertEqual(path('price_daily'), 'price_daily')
+        self.assertEqual(path('EBITDA'), 'Financial_Highlights')
         with self.assertRaises(ValueError):
             path('sthnotindatabase')
 
@@ -171,14 +173,14 @@ class test_operations(_unittest.TestCase):
         with self.assertRaises(ValueError):
             save(df, 'name', 'csv', test=True)  # '.csv'
         save(df, 'testClientSave', test=True)
-        files = _os.listdir(_os.path.join(datapath(False), 'test'))
+        files = _os.listdir(datapath(False, 'database', 'test'))
         self.assertIn('testClientSave', ''.join(files))
-        _os.remove(_os.path.join(datapath(False), 'test', 'testClientSave.csv'))
+        _os.remove(datapath(False, 'database', 'test', 'testClientSave.csv'))
 
         save(df, 'testClientSave2', '.xls', test=True)
-        files = _os.listdir(_os.path.join(datapath(False), 'test'))
+        files = _os.listdir(datapath(False, 'database', 'test'))
         self.assertIn('.xls', ''.join(files))
-        _os.remove(_os.path.join(datapath(False), 'test', 'testClientSave2.xls'))
+        _os.remove(datapath(False, 'database', 'test', 'testClientSave2.xls'))
 
     def test_Tools(self):
         # database_count() and sheets_names() no need to test
@@ -204,4 +206,3 @@ class test_operations(_unittest.TestCase):
         except TransInternetError:
             warn = "Translation failed because of poor internet connection. Check your internet pleases."
             raise Warning(warn)
-

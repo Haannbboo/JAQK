@@ -28,7 +28,7 @@ def setup():
     # setup starts
     companies = ['AAPL', 'AMZN']
     [create_folder(i, setup_path, True) for i in companies]  # create new folders
-    dirs = [_os.listdir(_os.path.join(datapath(setup=False), c)) for c in companies]
+    dirs = [_os.listdir(datapath(True, c)) for c in companies]
     dirs2 = dirs[:]
     del dirs
     try:
@@ -43,12 +43,12 @@ def setup():
             if dirs2[c][d] != '__init__.py' and dirs2[c][d] != '__pycache__']
 
         # delete original .py files
-        [_os.remove(_os.path.join(datapath(setup=False), companies[i], dirs2[i][j]))
+        [_os.remove(datapath(True, companies[i], dirs2[i][j]))
          for i in range(len(companies)) for j in range(len(dirs2[i]))
          if dirs2[i][j] != '__init__.py' and ('.csv' not in dirs2[i][j]) and dirs2[i][j] != '__pycache__']
 
     # setup general stock lists
-    dirs_general2 = _os.listdir(_os.path.join(datapath(setup=False), 'general'))
+    dirs_general2 = _os.listdir(datapath(True, 'general'))
     dirs_general = dirs_general2[:]  # avoid mutable list
     del dirs_general2
     try:
@@ -62,12 +62,12 @@ def setup():
         create_folder('general', setup_path, True)
         [open_general(ex, setup=True).to_csv(_os.path.join(setup_path, 'general', ex + '.csv'), index=False)
          for ex in exc]
-        [_os.remove(_os.path.join(datapath(setup=False), 'general', ex + '.py')) for ex in exc]
+        [_os.remove(datapath(True, 'general', ex + '.py')) for ex in exc]
 
     if 'dates_temp.py' in _os.listdir(_os.path.join(main_path, 'Spyder')):  # dates_temp
-        _pd.read_csv(_os.path.join(main_path, 'dates_temp.py')).to_csv(_os.path.join(main_path, 'dates_temp.csv'),
+        _pd.read_csv(_os.path.join(main_path, 'Spyder', 'dates_temp.py')).to_csv(_os.path.join(main_path, 'dates_temp.csv'),
                                                                        index=False)
-        _os.remove(_os.path.join(main_path, 'dates_temp.py'))  # delete original\
+        _os.remove(_os.path.join(main_path, 'Spyder', 'dates_temp.py'))  # delete original\
 
     if 'datefile.py' in _os.listdir(_os.path.join(main_path, 'Spyder')):  # datefile
         with open(_os.path.join(main_path, 'Spyder', 'datefile.py')) as d:

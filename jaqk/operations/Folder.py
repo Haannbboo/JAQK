@@ -1,5 +1,9 @@
 import os as _os
 
+from .Path import datapath
+
+
+'''
 global p
 p = _os.path.abspath(_os.path.join(_os.path.dirname(__file__), _os.pardir))
 # global datapath
@@ -15,17 +19,17 @@ def datapath(setup=True):
             return _os.path.join(p, 'database')
     except FileNotFoundError:
         return _os.path.join(p, 'database')
-
+'''
 
 
 def create_folder(stock, path='default', setup=False):
     if path == 'default':
-        ppath = _os.path.join(datapath(), stock) # jaqk/database/AAPL
+        ppath = datapath(True, stock) # jaqk/database/AAPL
     else:
-        if setup == True:
+        if setup is True:
             ppath = _os.path.join(path, stock) # setup_path/AAPL
-        elif setup == False:
-            ppath = _os.path.join(p, path, stock) # jaqk/path/AAPL
+        elif setup is False:
+            ppath = datapath(True, path, stock) # jaqk/path/AAPL
     if _os.path.isdir(ppath):  # If dir existed
         pass
     else:
@@ -33,7 +37,7 @@ def create_folder(stock, path='default', setup=False):
 
 
 def exist(stock, file, update=False):
-    p1 = _os.path.join(datapath(), stock, stock)
+    p1 = datapath(True, stock, stock)
     # if it needs update，then view it as not existing
     # and the save_file func handles the duplication
     if update:

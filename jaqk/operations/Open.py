@@ -18,7 +18,7 @@ def open_file(stock, name, setup=False):
         raise TypeError("Parameter 'stock' should be a string, not a "
                         + type(stock).__name__)
     if setup is True:  # when setup, name is "AAPL_income.csv", not "income"
-        path = _os.path.join(datapath(False), stock, name)
+        path = datapath(False, stock, name)
         df = _pd.read_csv(path)
         _gc.collect()
         return df
@@ -38,13 +38,13 @@ def open_file(stock, name, setup=False):
             raise ValueError(
                 'Parameter "name" should be the name of the financial sheets, not a factor name...Use path method to '
                 'find the location of a factor')
-    path = _os.path.join(datapath(), stock, stock)
+    path = datapath(True, stock, stock)
     try:
         df = _pd.read_csv(path + '_' + name + '.csv')
         _gc.collect()
     except FileNotFoundError:
         _gc.collect()
-        if _os.path.exists(_os.path.join(datapath(), stock)):
+        if _os.path.exists(datapath(True, stock)):
             raise ValueError("There is no sheet - {} - for company {}. Use main_get to retrieve the sheet".format
                              (name, stock))
         else:
@@ -65,10 +65,10 @@ def open_general(file, setup=False):
     """
     try:
         if setup is False:
-            p = _os.path.join(datapath(), 'general', file)
+            p = datapath(True, 'general', file)
             df = _pd.read_csv(p + '.csv')
         elif setup is True:
-            p = _os.path.join(datapath(False), 'general', file)
+            p = datapath(False, 'general', file)
             df = _pd.read_csv(p + '.py')
         else:
             df = None  # not tested here

@@ -15,7 +15,7 @@ def save_file(df, stock, name, update=False):
         name: str - which sheet is df
         update: bool - identify if it's for update or not
     """
-    path = _os.path.join(datapath(), stock, stock) + '_' + name + '.csv'
+    path = datapath(True, stock, stock + '_' + name + '.csv')
 
     if not update:
         pass
@@ -43,7 +43,7 @@ def save_file(df, stock, name, update=False):
 
 
 def save_analysis(dfs, stock):
-    path = _os.path.join(_os.path.join(datapath(), stock), stock)
+    path = datapath(True, stock, stock)
     names = ['Earnings_Estimate', 'Revenue_Estimate', 'Ernings_History',
              'EPS_Trend', 'EPS_Revisions', 'Growth_Estimates']
     for i in range(len(dfs)):
@@ -51,7 +51,7 @@ def save_analysis(dfs, stock):
 
 
 def save_dfs(dfs, stock, names):
-    path = _os.path.join(datapath(), stock, stock)
+    path = datapath(True, stock, stock)
     for i in range(len(dfs)):
         dfs[i].to_csv(path + '_' + names[i] + '.csv', index=False)
 
@@ -81,7 +81,7 @@ def save(df, name, file_type='.csv', mode='w', prt=True, test=False):
     elif test is True:
         window = sg.Window('Save to path')
         window.Close()
-        path = _os.path.join(datapath(False), 'test')
+        path = datapath(False, 'database', 'test')
     # path=values['save']
     if path == '' or path is None:
         print("You didn't choose a path for saving... Please choose one.")

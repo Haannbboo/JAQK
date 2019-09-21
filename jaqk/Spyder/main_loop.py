@@ -1,13 +1,10 @@
-import os as _os
 import time as _time
 import asyncio
 
 from ..operations.Tools import sheet_names
 from ..operations.Open import open_stock_list, open_general
+from ..operations.Path import datapath
 from .parse_main import parse
-
-global main_path
-main_path = _os.path.abspath(_os.path.dirname(__file__))
 
 
 def main(stocks='SP100', sheets='financials', batch=32, update=False, exception=False):
@@ -63,7 +60,7 @@ def main(stocks='SP100', sheets='financials', batch=32, update=False, exception=
         sheets = sheets  # when update, sheet=['income', 'balance', etc.], not 'financials'
     print("Get includes: {}".format(str(sheets)))
 
-    with open(_os.path.join(main_path, 'get_sheets_cache.txt'), 'w') as w:
+    with open(datapath(False, 'Spyder', 'get_sheets_cache.txt'), 'w') as w:
         w.write(','.join(sheets))  # save param sheets to cache for update() to use
 
     if stocks in ['NYSE', 'NASDAQ', 'ALL']:

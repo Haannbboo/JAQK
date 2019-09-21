@@ -7,8 +7,6 @@ from ..operations.Format import factor as _factor
 from ..operations.Open import open_file as _open_file
 from ..operations.Path import path as _path
 
-# from factors import _balance, cash_flow, key, stats
-
 
 def factor_percentile(Factor, stock):
     """Get the percentile ranking of a factor of a stock.
@@ -180,7 +178,7 @@ def _percentile_core(Factor, diff=None, update=False):
             else:
                 df = _open_file(i, name)
                 f = _factor(df, Factor)
-            if len(f) < 4 and name in ['income', 'balance', 'cash_flow']:
+            if len(f) <= 2 and name in ['income', 'balance', 'cash_flow']:
                 d.remove(i)
                 continue
             else:
@@ -282,7 +280,7 @@ def _update_old_one(df_new, df_old, Factor):
         pandas DataFrame with all companies updated for param Factor
     """
     # print('_update_old_one')
-    df = _pd.concat([df_old, df_new])
+    df = _pd.concat([df_old, df_new], sort=False)
     _save_csv(df, Factor)
     return df
 

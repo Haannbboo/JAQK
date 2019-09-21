@@ -19,7 +19,8 @@ from .operations.Path import datapath
 
 from .calculations import *
 from .factors import cash_flow, income, balance, key, stats
-from .Spyder.get import update, getLastUpdate, main, load_stock_list
+from .Spyder.update_main import update, get_last_update, load_stock_list
+from .Spyder.main_loop import main
 
 from .setup import setup
 
@@ -28,9 +29,9 @@ from .operations.Path import path
 
 from .test2 import test # unittest
 
-    
-if len(_os.listdir(datapath())) - 2 < 100:
-    print("There is not sufficient data in the database. Use main_get() to retrieve data")
+
+if len(_os.listdir(datapath(True))) - 2 < 100:
+    print("There is not sufficient data in the database. Use main() to retrieve data")
 
 
 _gc.collect()
