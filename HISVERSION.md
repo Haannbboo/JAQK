@@ -34,4 +34,5 @@
 - 8pm, Sep. 19th: Re-factorization. Add comments to code. 
 - 11am, Sep.20th: Add exceptionn.py, move setup() from get.py to setup.py, delete basic folder (moved to operations.Open), minor optimization and bug fix.
 - 3pm, Sep. 21st: Reformat Web Spyder folder.
-- 1am, Sep.22nd: Rewrite path.py, further split get.py, minor bug fix in rank.py and some tests
+- 1am, Sep. 22nd: Rewrite path.py, further split get.py, minor bug fix in rank.py and some tests
+- 1pm, Sep. 22d: Delete stock, move functionalities to operations.Get

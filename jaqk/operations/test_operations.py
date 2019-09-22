@@ -137,7 +137,7 @@ class test_operations(_unittest.TestCase):
             open_stock_list([1, 2, 3])
 
     def test_Path(self):
-        from .Path import path, datapath
+        from .Path import path
 
         # Test path
         self.assertEqual(path('Total Revenue'), 'income')
@@ -169,7 +169,6 @@ class test_operations(_unittest.TestCase):
         self.assertEqual(df.iloc[0:-1, 1][0], 12)
 
         # Test save
-        from .Path import datapath
         with self.assertRaises(ValueError):
             save(df, 'name', 'csv', test=True)  # '.csv'
         save(df, 'testClientSave', test=True)
@@ -206,3 +205,11 @@ class test_operations(_unittest.TestCase):
         except TransInternetError:
             warn = "Translation failed because of poor internet connection. Check your internet pleases."
             raise Warning(warn)
+
+    def test_Get(self):
+        from .Get import get_sheet, _sheet_container
+        x = get_sheet('AAPL', 'income')
+        x['AAPL']['income']
+        x = get_sheet('AAPL', ['stats', 'price_daily'], start='2017-09-13')
+        self.assertIsInstance(x['AAPL'], _sheet_container)
+        self.assertLessEqual(len(x['AAPL']['price_daily']), 1000)
