@@ -19,6 +19,17 @@ def database_count():
     _gc.collect()
 
 
+def success_rate():
+    companies = _os.walk(datapath(True))
+    cnt = 0
+    s_cnt = 0
+    for _, _, files in companies:
+        cnt +=1
+        if len(files)>=18:
+            s_cnt +=1 
+    return round(s_cnt/cnt, 4)
+    
+
 def database_clear(path='datapath'):
     """
     clear all data in database (use cautiously)
@@ -47,7 +58,7 @@ def database_reset():
     convert package database directory to its original state
     """
     pass
-
+ 
 
 def factors_names(sheet=None):
     if sheet is None:

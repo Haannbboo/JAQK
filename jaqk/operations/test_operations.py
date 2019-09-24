@@ -29,6 +29,11 @@ class test_operations(_unittest.TestCase):
             exist('AAPL', 123)
             exist('AAPL', True)
 
+        from .Folder import is_full
+        self.assertTrue(is_full('AAPL'))
+        self.assertTrue(is_full('AMZN'))
+        self.assertFalse(is_full('general'))
+
     def test_Format(self):
         from .Format import _decimal
         t = _decimal(['302,32', '203,2304,2034.34', '1234,2345'])
@@ -126,7 +131,7 @@ class test_operations(_unittest.TestCase):
         self.assertGreaterEqual(len(open_general('NYSE')), 3000)
 
         # Test open_stock_list
-        df = open_stock_list(True)
+        df = open_stock_list('ALL')
         self.assertGreater(len(df), 6529)  # 6531 in total
         self.assertGreater(len(df['Symbol']), 6529)
         self.assertIn('XOM', df['Symbol'].values)

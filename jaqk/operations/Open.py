@@ -80,7 +80,7 @@ def open_general(file, setup=False):
         return None
 
 
-def open_stock_list(exchange=True):
+def open_stock_list(exchange='ALL'):
     """Read the stock list in database, a wrap up of open_general.
 
     Open stock list files in database using open_general() function.
@@ -94,10 +94,10 @@ def open_stock_list(exchange=True):
     Raises:
         ValueError: error assessing exchange param.
     """
-    if exchange not in ['NYSE', 'NASDAQ'] and exchange is not True:
+    if exchange not in ['NYSE', 'NASDAQ'] and exchange != 'ALL':
         raise ValueError("Parameter 'exchange' should either NYSE or NASDAQ")
 
-    if exchange is True:  # all tickets
+    if exchange == 'ALL':  # all tickets
         c1 = open_general('NASDAQ')
         c2 = open_general('NYSE')
         df = _pd.concat([c1, c2], ignore_index=True).drop('Unnamed: 9', axis=1)  # drop duplicated column

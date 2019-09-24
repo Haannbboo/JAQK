@@ -9,7 +9,7 @@ from .factors.factors import get_factors
 
 from .operations.Save import save
 from .operations.Tools import (database_count, database_clear, factors_names,
-                               sheet_names, code_count, clean)
+                               sheet_names, code_count, clean, success_rate)
 from .operations.Open import open_stock_list
 from .operations.Get import get_sheet, get_desc
 from .operations.Path import datapath
