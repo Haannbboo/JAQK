@@ -47,7 +47,7 @@ class error_record(object):
         try:
             self.csv = _pd.read_csv(self.path)
             self.errors = self.csv['Error'].values
-        except FileNotFoundError:
+        except (FileNotFoundError, KeyError):
             self.csv = _pd.DataFrame()
             self.errors = self.csv.values
 
@@ -58,9 +58,16 @@ class error_record(object):
         return flag_failed and flag_empty_csv
 
     def save_failed(self, company, sheet, exception):
+        if exception is None:
+            return
         name = '{}_{}'.format(company, sheet)
         # df = _pd.concat((self.csv, _pd.DataFrame([[name, exception]])), ignore_index=True)
         df = _pd.DataFrame([[name, exception]])
         df.columns = ['Error', 'Info']
 
-        df.to_csv(self.path, header=False, mode='a')
+        if len(self.csv) == 0:
+            header = True
+        else:
+            header = False
+
+        df.to_csv(self.path, header=header, mode='a+')

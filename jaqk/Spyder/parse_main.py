@@ -59,8 +59,9 @@ async def parse(c, names, sheets, update=False, exception=False):
 
                 del html  # save memory since len(html) is about 500,000
                 await asyncio.sleep(0.27)
-            except Exception as e:
+            except (ValueError, IndexError, KeyError) as e:
                 errors.save_failed(c, 'Summary', e)
+            except Exception as e:
                 if exception:
                     print(exception_msg.format('summary', c, e))
         if not exist(c, names[3:6], update) and _is_active(names[3:6], sheets) and not errors.is_failed(c, 'stats'):
@@ -71,6 +72,8 @@ async def parse(c, names, sheets, update=False, exception=False):
 
                 del html
                 await asyncio.sleep(0.27)
+            except (ValueError, IndexError, KeyError) as e:
+                errors.save_failed(c, 'Summary', e)
             except Exception as e:
                 errors.save_failed(c, 'stats', e)
                 if exception:
@@ -85,6 +88,8 @@ async def parse(c, names, sheets, update=False, exception=False):
 
                 del html
                 await asyncio.sleep(0.27)
+            except (ValueError, IndexError, KeyError) as e:
+                errors.save_failed(c, 'Summary', e)
             except Exception as e:
                 errors.save_failed(c, 'holders', e)
                 if exception:
@@ -97,6 +102,8 @@ async def parse(c, names, sheets, update=False, exception=False):
 
                 del html
                 await asyncio.sleep(0.27)
+            except (ValueError, IndexError, KeyError) as e:
+                errors.save_failed(c, 'Summary', e)
             except Exception as e:
                 errors.save_failed(c, 'profile', e)
                 if exception:
@@ -109,6 +116,8 @@ async def parse(c, names, sheets, update=False, exception=False):
 
                 del html
                 await asyncio.sleep(0.27)
+            except (ValueError, IndexError, KeyError) as e:
+                errors.save_failed(c, 'Summary', e)
             except Exception as e:
                 errors.save_failed(c, 'analysis', e)
                 if exception:
@@ -121,6 +130,8 @@ async def parse(c, names, sheets, update=False, exception=False):
 
                 del html
                 await asyncio.sleep(0.27)
+            except (ValueError, IndexError, KeyError) as e:
+                errors.save_failed(c, 'Summary', e)
             except Exception as e:
                 errors.save_failed(c, 'income', e)
                 if exception:
@@ -133,7 +144,9 @@ async def parse(c, names, sheets, update=False, exception=False):
 
                 del html
                 await asyncio.sleep(0.27)
-            except IndexError as e:
+            except (ValueError, IndexError, KeyError) as e:
+                errors.save_failed(c, 'Summary', e)
+            except Exception as e:
                 errors.save_failed(c, 'balance', e)
                 if exception:
                     print(exception_msg.format('balance-sheet', c, e))
@@ -145,6 +158,8 @@ async def parse(c, names, sheets, update=False, exception=False):
 
                 del html
                 await asyncio.sleep(0.27)
+            except (ValueError, IndexError, KeyError) as e:
+                errors.save_failed(c, 'Summary', e)
             except Exception as e:
                 errors.save_failed(c, 'cash_flow', e)
                 if exception:
@@ -152,7 +167,7 @@ async def parse(c, names, sheets, update=False, exception=False):
         _gc.collect()
     except Exception as e:
         errors.save_failed(c, 'main', e)
-        print("Exception on {}: {}".format(c, e))
+        # print("Exception on {}: {}".format(c, e))
 
 
 def _is_active(names, sheets):
