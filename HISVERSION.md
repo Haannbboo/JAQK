@@ -36,3 +36,4 @@
 - 3pm, Sep. 21st: Reformat Web Spyder folder.
 - 1am, Sep. 22nd: Rewrite path.py, further split get.py, minor bug fix in rank.py and some tests
 - 1pm, Sep. 22d: Delete stock, move functionalities to operations.Get
+- 12pm, Sep. 24th: Add is_full() and add error_record class (to speed up Spyder), add success_rate()
