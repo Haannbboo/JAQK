@@ -25,7 +25,7 @@ async def parse(c, names, sheets, update=False, exception=False):
     Returns:
         None
     """
-    urls = ['https://finance.yahoo.com/quote/' + c + '/holders?p=' + c,
+    urls = ['https://finance.yahoo.com/quote/{}/holders?p={}'.format(c, c),
             'https://finance.yahoo.com/quote/' + c + '/financials?p=' + c,
             'https://finance.yahoo.com/quote/' + c + '/balance-sheet?p=' + c,
             'https://finance.yahoo.com/quote/' + c + '/cash-flow?p=' + c,
@@ -51,7 +51,7 @@ async def parse(c, names, sheets, update=False, exception=False):
         # I separated each of them rather than put them into a function.
 
         create_folder(c)
-        if (not exist(c, 'Summary', update)) and _is_active('Summary', sheets) and not errors.is_failed(c, 'Summary'):
+        if not exist(c, 'Summary', update) and _is_active('Summary', sheets) and not errors.is_failed(c, 'Summary'):
             # update summary
             try:
                 html = await getter(urls[7])  # async request
@@ -73,9 +73,9 @@ async def parse(c, names, sheets, update=False, exception=False):
                 del html
                 await asyncio.sleep(0.27)
             except (ValueError, IndexError, KeyError) as e:
-                errors.save_failed(c, 'Summary', e)
-            except Exception as e:
                 errors.save_failed(c, 'stats', e)
+            except Exception as e:
+                # errors.save_failed(c, 'stats', e)
                 if exception:
                     print(exception_msg.format('key-statistics', c, e))
         if not exist(c, names[0:3], update) and _is_active(names[0:3], sheets) and not errors.is_failed(c, 'holders'):
@@ -89,9 +89,9 @@ async def parse(c, names, sheets, update=False, exception=False):
                 del html
                 await asyncio.sleep(0.27)
             except (ValueError, IndexError, KeyError) as e:
-                errors.save_failed(c, 'Summary', e)
-            except Exception as e:
                 errors.save_failed(c, 'holders', e)
+            except Exception as e:
+                # errors.save_failed(c, 'holders', e)
                 if exception:
                     print(exception_msg.format('holders', c, e))
         if not exist(c, names[6:8], update) and _is_active(names[6:8], sheets) and not errors.is_failed(c, 'profile'):
@@ -103,23 +103,24 @@ async def parse(c, names, sheets, update=False, exception=False):
                 del html
                 await asyncio.sleep(0.27)
             except (ValueError, IndexError, KeyError) as e:
-                errors.save_failed(c, 'Summary', e)
-            except Exception as e:
                 errors.save_failed(c, 'profile', e)
+            except Exception as e:
+                # errors.save_failed(c, 'profile', e)
                 if exception:
                     print(exception_msg.format('profile', c, e))
         if not exist(c, names[8:14], update) and _is_active(names[8:14], sheets) and not errors.is_failed(c, 'analysis'):
             # update analysis
             try:
                 html = await getter(urls[6])
-                save_analysis(get_analysis(html), c)
+                # save_analysis(get_analysis(html), c)
+                save_dfs(get_analysis(html), c, names[8:14])
 
                 del html
                 await asyncio.sleep(0.27)
             except (ValueError, IndexError, KeyError) as e:
-                errors.save_failed(c, 'Summary', e)
-            except Exception as e:
                 errors.save_failed(c, 'analysis', e)
+            except Exception as e:
+                # errors.save_failed(c, 'analysis', e)
                 if exception:
                     print(exception_msg.format('analysis', c, e))
         if not exist(c, 'income', update) and _is_active('income', sheets) and not errors.is_failed(c, 'income'):
@@ -131,9 +132,9 @@ async def parse(c, names, sheets, update=False, exception=False):
                 del html
                 await asyncio.sleep(0.27)
             except (ValueError, IndexError, KeyError) as e:
-                errors.save_failed(c, 'Summary', e)
-            except Exception as e:
                 errors.save_failed(c, 'income', e)
+            except Exception as e:
+                # errors.save_failed(c, 'income', e)
                 if exception:
                     print(exception_msg.format('income', c, e))
         if not exist(c, 'balance', update) and _is_active('balance', sheets) and not errors.is_failed(c, 'balance'):
@@ -145,9 +146,9 @@ async def parse(c, names, sheets, update=False, exception=False):
                 del html
                 await asyncio.sleep(0.27)
             except (ValueError, IndexError, KeyError) as e:
-                errors.save_failed(c, 'Summary', e)
-            except Exception as e:
                 errors.save_failed(c, 'balance', e)
+            except Exception as e:
+                # errors.save_failed(c, 'balance', e)
                 if exception:
                     print(exception_msg.format('balance-sheet', c, e))
         if not exist(c, 'cash_flow', update) and _is_active('balance', sheets) and not errors.is_failed(c, 'cash_flow'):
@@ -159,9 +160,9 @@ async def parse(c, names, sheets, update=False, exception=False):
                 del html
                 await asyncio.sleep(0.27)
             except (ValueError, IndexError, KeyError) as e:
-                errors.save_failed(c, 'Summary', e)
-            except Exception as e:
                 errors.save_failed(c, 'cash_flow', e)
+            except Exception as e:
+                # errors.save_failed(c, 'cash_flow', e)
                 if exception:
                     print(exception_msg.format('cash-flow', c, e))
         _gc.collect()

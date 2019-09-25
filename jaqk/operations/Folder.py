@@ -44,30 +44,56 @@ class error_record(object):
 
     def __init__(self):
         self.path = datapath(False, 'Spyder', 'error.csv')
+        self.tolerance_factor = 3
         try:
             self.csv = _pd.read_csv(self.path)
-            self.errors = self.csv['Error'].values
-        except (FileNotFoundError, KeyError):
+        except FileNotFoundError:
             self.csv = _pd.DataFrame()
-            self.errors = self.csv.values
 
     def is_failed(self, company, sheet):
         name = '{}_{}'.format(company, sheet)
-        flag_failed = name in self.errors
+        
+        try:
+            error_piece = self.csv[self.csv['Error'] == name]
+        except KeyError:
+            error_piece = _pd.DataFrame()
+            
+        flag_failed = len(error_piece)==1
         flag_empty_csv = len(self.csv) != 0
-        return flag_failed and flag_empty_csv
+        flag_tolerance = error_piece.get('Tolerance', True)
+        if flag_tolerance is True:
+            pass
+        else:
+            flag_tolerance = flag_tolerance.squeeze()>=self.tolerance_factor
+        return flag_failed and flag_empty_csv and flag_tolerance
 
     def save_failed(self, company, sheet, exception):
         if exception is None:
             return
+        
         name = '{}_{}'.format(company, sheet)
-        # df = _pd.concat((self.csv, _pd.DataFrame([[name, exception]])), ignore_index=True)
-        df = _pd.DataFrame([[name, exception]])
-        df.columns = ['Error', 'Info']
 
-        if len(self.csv) == 0:
-            header = True
+        flag_empty_csv = len(self.csv) != 0  # csv empty or not
+        try:
+            df = self.csv[self.csv['Error'] == name]
+        except KeyError:
+            df = _pd.DataFrame([[name, exception, 0]])
+            
+        if len(df) == 0:
+            df = _pd.DataFrame([[name, exception, 0]])
+            flag_error_exist = False
         else:
-            header = False
+            flag_error_exist = True
+            
+        if flag_error_exist is True:
+            index = df.index.values[0]
+            self.csv['Tolerance'][index] += 1
+            self.csv.to_csv(self.path, header=True, mode='w', index=False)
+        elif flag_error_exist is False: 
+            if len(self.csv) == 0:
+                df.columns = ['Error', 'Info', 'Tolerance']
+                header = True
+            else:
+                header = False
 
-        df.to_csv(self.path, header=header, mode='a+')
+            df.to_csv(self.path, header=header, mode='a+', index=False)
