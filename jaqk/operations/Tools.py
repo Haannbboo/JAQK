@@ -19,15 +19,15 @@ def database_count():
     _gc.collect()
 
 
-def success_rate():
+def success_rate(target):
     companies = _os.walk(datapath(True))
     cnt = 0
     s_cnt = 0
     for _, _, files in companies:
         cnt +=1
-        if len(files)>=18:
+        if len(files)>=target:
             s_cnt +=1 
-    return round(s_cnt/cnt, 4)
+    return round(s_cnt/cnt, 5)
     
 
 def database_clear(path='datapath'):

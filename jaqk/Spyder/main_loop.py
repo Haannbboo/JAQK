@@ -1,5 +1,7 @@
-import time as _time
 import asyncio
+
+import time as _time
+import random
 
 from ..operations.Tools import sheet_names
 from ..operations.Open import open_stock_list, open_general
@@ -7,7 +9,7 @@ from ..operations.Path import datapath
 from .parse_main import parse
 
 
-def main(stocks='SP100', sheets='financials', batch=32, update=False, exception=False):
+def main(stocks='SP100', sheets='financials', batch=32, update=False, exception=False, error_cache=False):
     """Main asynchronous coroutine loop.
 
     It creates async tasks and put them into async loop for parse() and prints out the progress.
@@ -65,6 +67,7 @@ def main(stocks='SP100', sheets='financials', batch=32, update=False, exception=
 
     if stocks in ['NYSE', 'NASDAQ', 'ALL']:
         stocks = open_stock_list(stocks)['Symbol'].tolist()  # NASDAQ or NYSE
+        random.shuffle(stocks)
     if stocks == 'SP100':  # SP100 - default
         stocks = open_general('SP100')['Symbol'].tolist()  # read csv
     if not isinstance(stocks, list):
@@ -78,7 +81,7 @@ def main(stocks='SP100', sheets='financials', batch=32, update=False, exception=
     for i in range(0, len_temp, batch):  # Main loop
         # async in 3.6
         t1 = _time.time()
-        tasks = [asyncio.ensure_future(parse(c, names_of_sheets, sheets=sheets, update=update, exception=exception))
+        tasks = [asyncio.ensure_future(parse(c, names_of_sheets, sheets=sheets, update=update, exception=exception, error_cache=error_cache))
                  for c in stocks[i:i + batch]]  # create async tasks
         loop = asyncio.get_event_loop()
         loop.run_until_complete(asyncio.wait(tasks))  # async main loop

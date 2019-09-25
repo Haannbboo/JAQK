@@ -42,7 +42,8 @@ def is_full(company):
 
 class error_record(object):
 
-    def __init__(self):
+    def __init__(self,  activate=True):
+        self.activate = activate
         self.path = datapath(False, 'Spyder', 'error.csv')
         self.tolerance_factor = 3
         try:
@@ -51,6 +52,8 @@ class error_record(object):
             self.csv = _pd.DataFrame()
 
     def is_failed(self, company, sheet):
+        if self.activate is False:
+            return False
         name = '{}_{}'.format(company, sheet)
         
         try:
@@ -69,6 +72,8 @@ class error_record(object):
 
     def save_failed(self, company, sheet, exception):
         if exception is None:
+            return
+        if self.activate is False:
             return
         
         name = '{}_{}'.format(company, sheet)

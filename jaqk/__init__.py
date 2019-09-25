@@ -27,8 +27,8 @@ from .operations.Path import path
 from .test2 import test # unittest
 
 
-if len(_os.listdir(datapath(True))) - 2 < 100:
-    print("There is not sufficient data in the database. Use main() to retrieve data")
+# if len(_os.listdir(datapath(True))) - 2 < 100:
+#     print("There is not sufficient data in the database. Use main() to retrieve data")
 
 
 _gc.collect()

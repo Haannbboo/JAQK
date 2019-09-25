@@ -8,7 +8,7 @@ from ..operations.Folder import is_full as _is_full
 from .getter import getter
 
 
-async def parse(c, names, sheets, update=False, exception=False):
+async def parse(c, names, sheets, update=False, exception=False, error_cache=False):
     """Main parser of the Spyder that wraps up individual parsing rules.
 
     It calls the async getter function and pass the html to parser (get_summary() etc.),
@@ -41,7 +41,7 @@ async def parse(c, names, sheets, update=False, exception=False):
     
     if _is_full(c):
         return
-    errors = error_record()
+    errors = error_record(activate=error_cache)
     if errors.is_failed(c, 'main'):
         return
 

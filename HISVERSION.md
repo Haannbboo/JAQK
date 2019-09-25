@@ -39,3 +39,4 @@
 - 12pm, Sep. 24th: Add is_full() and add error_record class (to speed up Spyder), add success_rate().
 - 1am, Sep. 25th: Update rank.py, Folder.py, parse_main.py to debug.
 - 1pm, Sep. 25th: Update error_record class, parse_main.py to support tolerance factor.
+- 4pm, Sep. 25th: Update error_record class, parse_main.py to support downloading without using error cache file.
