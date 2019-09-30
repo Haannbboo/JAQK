@@ -5,35 +5,30 @@ import gc as _gc
 # __version__=='0.0.1'
 
 
-from .stock import financials, analysis, profile, prices
-# from .stock import financials
-from .stock.profile import description as desc
-
-from .basics.stocks import stock_list
-
 from .factors.factors import get_factors
 
-from .operations.Save import save  # done
+from .operations.Save import save
 from .operations.Tools import (database_count, database_clear, factors_names,
-                               sheets_names, code_count)
-from .operations.Open import open_file
-# from .operations.Open import open_general as _open_general
+                               sheet_names, code_count, clean, success_rate)
+from .operations.Open import open_stock_list
+from .operations.Get import get_sheet, get_desc
+from .operations.Path import datapath
 
-
-# calculation.key.Beta is not done
-
-#from .calculation import *
-from .calculations import rank
+from .calculations import *
 from .factors import cash_flow, income, balance, key, stats
-from .get import update, getLastUpdate, main_get, load_stock_list, setup, datapath
+from .Spyder.update_main import update, get_last_update, load_stock_list
+from .Spyder.main_loop import main
 
-from .operations.Path import path  # not tested
+from .setup import setup
+
+
+from .operations.Path import path
 
 from .test2 import test # unittest
 
-    
-if len(_os.listdir(datapath())) - 2 < 100:
-    print("There is not sufficient data in the database. Use main_get() to retrieve data")
+
+# if len(_os.listdir(datapath(True))) - 2 < 100:
+#     print("There is not sufficient data in the database. Use main() to retrieve data")
 
 
 _gc.collect()

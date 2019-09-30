@@ -2,32 +2,31 @@ import numpy as _np
 import re
 
 
-def _decimal(array):  # eliminate ',' in numbers
-    """
-    if len(array)==1:
+def _decimal(array):
+    """Eliminate ',' in numbers, e.g. 10,000 to 10000
 
-    for i in range(len(array)):
-        temp = array[i]
-        if isinstance(temp, _np.ndarray) and '-' in temp:
-            array[i]=_np.array(['0']*len(temp)) # must be array[i]
+    Using numpy vectorization to map filter to the input array
+
+    Args:
+        array: list/np.ndarray - array that needs to be formated
     """
     d = _np.vectorize(lambda x: float(re.compile(',').sub('', x)))
     return d(array)
 
 
-def _money_digits(array):  # not done, probably not useful
+def _money_digits(array):  # map to all
     f = _np.vectorize(_is_wrong_digit)
     return f(array)
 
 
-def _is_wrong_digit(digit):
+def _is_wrong_digit(digit):  # convert money digit into values
     t = {'B': 1000000000, 'M': 1000000, 'K': 1000, '%': 0.01}
     if isinstance(digit, str):
-        last = digit[-1]
+        last = digit[-1]  # last digit
         if last == '-':
             return '0.0'
         if last in ['B', 'M', 'K', '%']:
-            new = str(eval(digit[0:-1]) * t[last])
+            new = str(eval(''.join(re.findall('[0-9]', digit))) * t[last])
             return new
         else:
             return digit
@@ -62,5 +61,4 @@ def factor(df, factor, year=True):
             years = year_convert(year, df)
             # problematic here
             f = _decimal(_money_digits([df.loc[df.Statements == fac, years].values[0] for fac in factor]))
-        # big bug here, not handling specific year list, eg. [2018, 2017]
     return f

@@ -1,43 +1,40 @@
 import os as _os
 import pandas as _pd
 
-p = _os.path.abspath(_os.path.join(_os.path.dirname(__file__), _os.pardir))
-# global datapath
-# datapath = _os.path.join(p, 'database')
-def datapath(setup=True):
-    try:
-        with open(_os.path.join(p, 'setup_cache.txt')) as w:
-            path = w.read()
-        if setup==True:
-            return path
-        else:
-            return _os.path.join(p, 'database')
-    except FileNotFoundError:
-        return _os.path.join(p, 'database')
+from .Path import datapath
 
 
 def save_file(df, stock, name, update=False):
-    path = _os.path.join(datapath(), stock, stock) + '_' + name + '.csv'
+    """Main saver, save file to database
+
+    If it's for update, it will open the old sheet and concatenate new data into the correct columns.
+
+    Args:
+        df: pandas DataFrame to be saved
+        stock: str - which stock does df belongs to
+        name: str - which sheet is df
+        update: bool - identify if it's for update or not
+    """
+    path = datapath(True, stock, stock + '_' + name + '.csv')
 
     if not update:
         pass
     elif update:
         try:
-            d = _pd.read_csv(path)
+            d = _pd.read_csv(path)  # open old
             d = d[list(d)[1:]]
         except FileNotFoundError:
             d = _pd.DataFrame()
         try:
-            first = df.iloc[0:, 0]
+            first = df.iloc[0:, 0]  # first column
             df = _pd.concat([df[list(df)[1:]], d], axis=1)
             df = df.loc[:, ~df.columns.duplicated()]  # Drop duplicated column
         except Exception as e:
             print("Exception in save_file: " + str(e))
         try:
             columns_title = list(df)
-            # temp=columns_title.pop(0)
-            columns_title.sort(key=lambda x: x.split('/')[-1:-3:-1], reverse=True)  # Sort index by Y & M
-            # columns_title.insert(0, temp)
+            # Sort column by Year&Month
+            columns_title.sort(key=lambda x: x.split('/')[-1:-3:-1], reverse=True) 
             df = df.reindex(columns=columns_title)  # Swap columns
             df = _pd.concat((first, df), axis=1, ignore_index=False)
         except Exception as e:
@@ -46,7 +43,7 @@ def save_file(df, stock, name, update=False):
 
 
 def save_analysis(dfs, stock):
-    path = _os.path.join(_os.path.join(datapath(), stock), stock)
+    path = datapath(True, stock, stock)
     names = ['Earnings_Estimate', 'Revenue_Estimate', 'Ernings_History',
              'EPS_Trend', 'EPS_Revisions', 'Growth_Estimates']
     for i in range(len(dfs)):
@@ -54,7 +51,7 @@ def save_analysis(dfs, stock):
 
 
 def save_dfs(dfs, stock, names):
-    path = _os.path.join(datapath(), stock, stock)
+    path = datapath(True, stock, stock)
     for i in range(len(dfs)):
         dfs[i].to_csv(path + '_' + names[i] + '.csv', index=False)
 
@@ -76,18 +73,18 @@ def save(df, name, file_type='.csv', mode='w', prt=True, test=False):
     form_rows = [[sg.Text('Choose the save path')],
                  [sg.Text('Save path: ', size=(15, 1)), sg.InputText(key='save'), sg.FolderBrowse()],
                  [sg.Submit(), sg.Cancel()]]
-    if test == False:
+    if test is False:
         window = sg.Window('Save to path')
         _, values = window.Layout(form_rows).Read()
         window.Close()
         path = values['save']
-    elif test == True:
+    elif test is True:
         window = sg.Window('Save to path')
         window.Close()
-        path = _os.path.join(datapath(False), 'test')
+        path = datapath(False, 'database', 'test')
     # path=values['save']
-    if path == '' or None:
-        print("You didn't choose a path for saving...")
+    if path == '' or path is None:
+        print("You didn't choose a path for saving... Please choose one.")
         return
     try:
         p = _os.path.join(path, name + file_type)
@@ -96,4 +93,4 @@ def save(df, name, file_type='.csv', mode='w', prt=True, test=False):
         print("Exception in client saver: " + str(e))
         return
     if prt and (not test):
-        print("Saved dataframe to " + p)
+        print("Saved data sheet to " + p)

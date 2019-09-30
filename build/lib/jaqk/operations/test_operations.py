@@ -1,16 +1,18 @@
 import unittest as _unittest
-# import os as _os
+
 import numpy as _np
 from .Open import open_file as _open_file
 import os as _os
 import pandas as _pd
 
+from ..exceptions import TransInternetError
+from .Path import datapath
 
 
 class test_operations(_unittest.TestCase):
     def test_Folder(self):
-        from .Folder import create_folder, p
-        path = _os.path.join(p, 'operations')
+        from .Folder import create_folder
+        path = datapath(False, 'operations')
         orig = _os.listdir(path)
         x = len(orig)
         if 'test_folder' not in orig:
@@ -26,6 +28,11 @@ class test_operations(_unittest.TestCase):
         with self.assertRaises(TypeError):
             exist('AAPL', 123)
             exist('AAPL', True)
+
+        from .Folder import is_full
+        self.assertTrue(is_full('AAPL'))
+        self.assertTrue(is_full('AMZN'))
+        self.assertFalse(is_full('general'))
 
     def test_Format(self):
         from .Format import _decimal
@@ -92,7 +99,9 @@ class test_operations(_unittest.TestCase):
         self.assertIsInstance(bb, _np.ndarray)
 
     def test_Open(self):
-        from .Open import open_file
+
+        # Test open_file
+        from .Open import open_file, open_general, open_stock_list
         df = open_file('AAPL', 'income')
         self.assertIsInstance(df, _pd.core.frame.DataFrame)
         self.assertGreaterEqual(len(list(df)), 5)
@@ -110,25 +119,45 @@ class test_operations(_unittest.TestCase):
         self.assertGreaterEqual(len(list(df)), 16)
         self.assertEqual(df.Stock.tolist(), ['AAPL'])
 
-        with self.assertRaises((ValueError, FileNotFoundError, TypeError)):
-            open_file('AAPL', '09ioijv')
+        with self.assertRaises(ValueError):
             open_file('psldnld', 'vjsdf')
+            open_file('AAPL', '09ioijv')
+        with self.assertRaises(TypeError):
             open_file(['AAPL', 'AMZN'], 'income')
             open_file(12234, 'income')
 
-        from .Open import open_general
+        # Test open_general
         self.assertGreaterEqual(len(open_general('NASDAQ')), 3000)
         self.assertGreaterEqual(len(open_general('NYSE')), 3000)
 
+        # Test open_stock_list
+        df = open_stock_list('ALL')
+        self.assertGreater(len(df), 6529)  # 6531 in total
+        self.assertGreater(len(df['Symbol']), 6529)
+        self.assertIn('XOM', df['Symbol'].values)
+        self.assertLessEqual(len(open_stock_list('NASDAQ')), 3500)
+        with self.assertRaises(ValueError):
+            open_stock_list(False)
+            open_stock_list('ABCDE')
+            open_stock_list([1, 2, 3])
+
     def test_Path(self):
         from .Path import path
+
+        # Test path
         self.assertEqual(path('Total Revenue'), 'income')
         self.assertEqual(path('price_daily'), 'price_daily')
+        self.assertEqual(path('EBITDA'), 'Financial_Highlights')
         with self.assertRaises(ValueError):
-            path('notindatabase')
+            path('sthnotindatabase')
+
+        # Test datapath
+        pass
 
     def test_Save(self):
-        from .Save import save_file
+        from .Save import save_file, save
+
+        # Test save_file
         from .Open import open_file
         df = _pd.DataFrame([['a', 1, 2], ['b', 2, 3], ['c', 5, 6], ['d', 10, 11]])  # setup
         df.columns = ['Statements', '01/01/2018', '02/01/2017']
@@ -144,19 +173,18 @@ class test_operations(_unittest.TestCase):
         self.assertEqual(list(df)[1], '03/01/2019')
         self.assertEqual(df.iloc[0:-1, 1][0], 12)
 
-        from .Save import save
-        from ..get import datapath
+        # Test save
         with self.assertRaises(ValueError):
             save(df, 'name', 'csv', test=True)  # '.csv'
         save(df, 'testClientSave', test=True)
-        files = _os.listdir(_os.path.join(datapath(False), 'test'))
+        files = _os.listdir(datapath(False, 'database', 'test'))
         self.assertIn('testClientSave', ''.join(files))
-        _os.remove(_os.path.join(datapath(False), 'test', 'testClientSave.csv'))
+        _os.remove(datapath(False, 'database', 'test', 'testClientSave.csv'))
 
         save(df, 'testClientSave2', '.xls', test=True)
-        files = _os.listdir(_os.path.join(datapath(False), 'test'))
+        files = _os.listdir(datapath(False, 'database', 'test'))
         self.assertIn('.xls', ''.join(files))
-        _os.remove(_os.path.join(datapath(False), 'test', 'testClientSave2.xls'))
+        _os.remove(datapath(False, 'database', 'test', 'testClientSave2.xls'))
 
     def test_Tools(self):
         # database_count() and sheets_names() no need to test
@@ -173,4 +201,20 @@ class test_operations(_unittest.TestCase):
         self.assertGreaterEqual(code_count('chars'), 62888)
 
         # not testing database_clear() now
-        
+
+    def test_Trans(self):
+        from .Trans import _translate
+        try:
+            self.assertEqual(_translate('hello world'), 'hello world')
+            self.assertEqual(_translate('hello world', t='zh'), '你好世界')
+        except TransInternetError:
+            warn = "Translation failed because of poor internet connection. Check your internet pleases."
+            raise Warning(warn)
+
+    def test_Get(self):
+        from .Get import get_sheet, _sheet_container
+        x = get_sheet('AAPL', 'income')
+        x['AAPL']['income']
+        x = get_sheet('AAPL', ['stats', 'price_daily'], start='2017-09-13')
+        self.assertIsInstance(x['AAPL'], _sheet_container)
+        self.assertLessEqual(len(x['AAPL']['price_daily']), 1000)

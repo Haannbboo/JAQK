@@ -3,89 +3,93 @@ import gc as _gc
 import pandas as _pd
 import numpy as _np
 
-global p
-p = _os.path.abspath(_os.path.join(_os.path.dirname(__file__), _os.pardir))
-# global datapath
-# datapath = _os.path.join(p, 'database')
-
-def _datapath(setup=True):
-    """
-    The global datapath for all other file. It sets your selected path in jaqk.setup() as the main datapath, and all data will be added/deleted from there.
-    """
-    try:
-        with open(_os.path.join(p, 'setup_cache.txt')) as w:
-            path = w.read()
-        if setup==True:
-            return path
-        else:
-            return _os.path.join(p, 'database')
-    except FileNotFoundError:
-        return _os.path.join(p, 'database')
+from .Path import datapath
 
 
 def database_count():
     """
     prints out the total number of companies and sheets in database
     """
-    a = len(_os.listdir(_datapath())) - 3
-    b = _os.walk(_datapath())  # generator
+    a = len(_os.listdir(datapath(True))) - 3
+    b = _os.walk(datapath(True))  # generator
     c = [1]
-    c = len([c[0] + 1 for root, dirs, files in b for name in files]) - 6
+    c = len([c[0] + 1 for root, dirs, files in b for _ in files]) - 6
     print("Total number of companies contained: {}".format(a))
     print("Total number of detailed sheets: {}".format(c))
     _gc.collect()
 
 
-def database_clear():
+def success_rate(target):
+    companies = _os.walk(datapath(True))
+    cnt = 0
+    s_cnt = 0
+    for _, _, files in companies:
+        cnt +=1
+        if len(files)>=target:
+            s_cnt +=1 
+    return round(s_cnt/cnt, 5)
+    
+
+def database_clear(path='datapath'):
     """
     clear all data in database (use cautiously)
     """
-    files = (i for i in _os.listdir(_datapath()))
-    for f in files: # file name
-        if f not in ['__init__.py', 'AAPL', 'AMZN', 'general', 'test']:
-            _os.remove(f)
-    f2 = _os.listdir(_datapath())
-    assert len(f2)<6
+    if path == 'datapath':
+        d = datapath(True)
+    else:
+        d = path
+    files = (i for i in _os.listdir(d))
+    for f in files:  # file name
+        if f not in ['__init__.py', '.DS_Store', 'AAPL', 'AMZN', 'general', 'test']:
+            dd = _os.path.join(d, f)
+            try:
+                for ff in _os.listdir(dd):
+                    _os.remove(_os.path.join(dd, ff))
+                _os.removedirs(dd)
+            except (NotADirectoryError, FileNotFoundError):
+                _os.remove(dd)
     print("Sucessfully clear all data in database")
+    _gc.collect()
 
 
 def database_reset():
     """
     reset database to the original state
-    automatically save the past database to database_cache
+    convert package database directory to its original state
     """
     pass
-    
-
+ 
 
 def factors_names(sheet=None):
     if sheet is None:
-        fil = _os.listdir(_os.path.join(_datapath(), 'AAPL'))
+        fil = _os.listdir(datapath(True, 'AAPL'))
         files = fil[:]
         try:
             files.remove('__init__.py')
             files.remove('__pycache__')
         except ValueError:
             pass
-
-        dfs = (_pd.read_csv(_os.path.join(_datapath(), 'AAPL', c)) for c in files)  # generator
+        dfs = (_pd.read_csv(datapath(True, 'AAPL', c)) for c in files)  # generator
         r = [df.iloc[0:, 0].values[1:] for df in dfs if len(df) < 48]
         r = [i.tolist()[j] for i in r for j in range(len(i.tolist()))] + list(
-            _pd.read_csv(_os.path.join(_datapath(), 'AAPL', 'AAPL_Summary.csv')))[1:]
+            _pd.read_csv(datapath(True, 'AAPL', 'AAPL_Summary.csv')))[1:]
+        # names = [i[5:-4] for i in files]
+        # r = {names[i]: r[i].tolist() for i in range(len(r))}
+            #
         r = _np.array(r, dtype='str')
     else:
-        if sheet not in sheets_names():
+        if sheet not in sheet_names():
             raise ValueError('Parameter sheet is wrong, use sheets_names() to find all sheets names')
         file = 'AAPL_{}.csv'.format(sheet)
         if sheet == 'Summary':
-            r = _np.array(list(_pd.read_csv(_os.path.join(_datapath(), 'AAPL', 'AAPL_Summary.csv')))[1:])
+            r = _np.array(list(_pd.read_csv(datapath(True, 'AAPL', 'AAPL_Summary.csv')))[1:])
         else:
-            r = _pd.read_csv(_os.path.join(_datapath(), 'AAPL', file)).iloc[0:-1, 0].values[1:]
+            r = _pd.read_csv(datapath(True, 'AAPL', file)).iloc[0:-1, 0].values[1:]
     _gc.collect()
     return r
 
 
-def sheets_names():
+def sheet_names():
     """
     returns a list of ALL sheets names (not all companies have all of them)
     """
@@ -94,7 +98,7 @@ def sheets_names():
              'Executives', 'Description',
              'Earnings_Estimate', 'Revenue_Estimate', 'Earnings_History',
              'EPS_Trend', 'EPS_Revisions', 'Growth_Estimates',
-             'stats', 'statements', 'reports',
+             'stats',
              'Executives', 'Description', 'analysis', 'Summary',
              'balance', 'cash_flow', 'income']
     _gc.collect()
@@ -107,7 +111,11 @@ def code_count(what='lines', detail=False):
     what - str - count what, default output everything - supporting -> lines, defs, chars
     detail - True / False - whether return count for each file or not
     """
-    path = p
+    if what not in ['lines', 'defs', 'chars']:
+        raise ValueError('Input parameter "what" must be one of lines, defs, chars, '
+                         'not {}'.format(what))
+
+    path = _os.path.abspath(_os.path.join(_os.path.dirname(__file__), _os.pardir))
     dirs = _os.listdir(path)
     dirs = [i for i in dirs if 'database' not in i]  # get rid of database stuff
     # dirs.remove('__pycache__')
@@ -165,13 +173,21 @@ def code_count(what='lines', detail=False):
             return count
         else:
             return sum(count.values())
-    if what == 'defs':
+    elif what == 'defs':
         if detail:
             return count_def
         else:
             return sum(count_def.values())
-    if what == 'chars':
+    elif what == 'chars':
         if detail:
             return count_char
         else:
             return sum(count_char.values())
+
+
+def clean():
+    """
+    clear up the unused memory in IDE (trying to)
+    using gc.collect()
+    """
+    _gc.collect()

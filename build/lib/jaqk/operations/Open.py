@@ -4,24 +4,7 @@ import pandas as _pd
 import gc as _gc
 
 from ..operations.Path import path as _path
-
-p = _os.path.abspath(_os.path.join(_os.path.dirname(__file__), _os.pardir))
-# global datapath
-# datapath = _os.path.join(p, 'database')
-
-def datapath(setup=True):
-    """
-    The global datapath for all other file. It sets your selected path in jaqk.setup() as the main datapath, and all data will be added/deleted from there.
-    """
-    try:
-        with open(_os.path.join(p, 'setup_cache.txt')) as w:
-            path = w.read()
-        if setup==True:
-            return path
-        else:
-            return _os.path.join(p, 'database')
-    except FileNotFoundError:
-        return _os.path.join(p, 'database')
+from ..operations.Path import datapath
 
 
 def open_file(stock, name, setup=False):
@@ -34,8 +17,9 @@ def open_file(stock, name, setup=False):
     if not isinstance(stock, str):
         raise TypeError("Parameter 'stock' should be a string, not a "
                         + type(stock).__name__)
-    if setup == True:  # when setup, name is "AAPL_income.csv", not "income"
-        path = _os.path.join(datapath(False), stock, name)
+    if setup is True:  # when setup, name is "AAPL_income.csv", not "income"
+        # path = _os.path.join(datapath(setup=False), stock, name)
+        path = datapath(True, stock, name)
         df = _pd.read_csv(path)
         _gc.collect()
         return df
@@ -54,14 +38,14 @@ def open_file(stock, name, setup=False):
         except ValueError:
             raise ValueError(
                 'Parameter "name" should be the name of the financial sheets, not a factor name...Use path method to '
-                'find the location of a factor') 
-    path = _os.path.join(datapath(), stock, stock)
+                'find the location of a factor')
+    path = datapath(True, stock, stock)
     try:
         df = _pd.read_csv(path + '_' + name + '.csv')
         _gc.collect()
     except FileNotFoundError:
         _gc.collect()
-        if _os.path.exists(_os.path.join(datapath(), stock)):
+        if _os.path.exists(datapath(True, stock)):
             raise ValueError("There is no sheet - {} - for company {}. Use main_get to retrieve the sheet".format
                              (name, stock))
         else:
@@ -70,26 +54,55 @@ def open_file(stock, name, setup=False):
 
 
 def open_general(file, setup=False):
+    """Read CSV in folder "general" in database. Also used in setup.py
+
+    Args:
+        file: str - file name, need '.csv'.
+        setup: bool - setup flag, indicate usage by setup or not.
+
+    Returns:
+        df - dataframe of stock list
+        if FileNotFound, print out suggestions
+    """
     try:
-        if setup == False:
-            p = _os.path.join(datapath(), 'general', file)
+        if setup is False:
+            p = datapath(True, 'general', file)
             df = _pd.read_csv(p + '.csv')
-        elif setup == True:
-            p = _os.path.join(datapath(False), 'general', file)
+        elif setup is True:
+            p = datapath(True, 'general', file)
             df = _pd.read_csv(p + '.py')
+        else:
+            df = None  # not tested here
         return df
-    except Exception as e:
-        print("Something wrong in opening the stock list: " + str(e))
-        return
+    except FileNotFoundError as e:
+        print("There is no record of {} in your database. Go to your chosen setup path to check, if not there go to "
+              "Github and download the missing sheet".format(file))
+        return None
 
 
-def open_dfs(ffactor):  # Not used yet, design for reduce IOs
-    """return a generator"""
-    p = '/Users/hanbo/Desktop/ML/QA/JAQK/database/'
-    name = _path(ffactor)
-    dirs = _os.listdir(p)
-    d = [i for i in dirs if
-         _os.path.isdir(_os.path.join(p, i)) and _os.path.exists(_os.path.join(p, i, i) + '_' + name + '.csv')]
-    print(len(d))
-    dfs = (open_file(i, name) for i in d)
-    return dfs
+def open_stock_list(exchange='ALL'):
+    """Read the stock list in database, a wrap up of open_general.
+
+    Open stock list files in database using open_general() function.
+
+    Args:
+        exchange: str - default True (all stocks), or either NYSE or NASDAQ.
+
+    Returns:
+        a csv format file with ticket names (rows) vs [Open, Close, High, Close, Adj. Close, Vol] (columns)
+
+    Raises:
+        ValueError: error assessing exchange param.
+    """
+    if exchange not in ['NYSE', 'NASDAQ'] and exchange != 'ALL':
+        raise ValueError("Parameter 'exchange' should either NYSE or NASDAQ")
+
+    if exchange == 'ALL':  # all tickets
+        c1 = open_general('NASDAQ')
+        c2 = open_general('NYSE')
+        df = _pd.concat([c1, c2], ignore_index=True).drop('Unnamed: 9', axis=1)  # drop duplicated column
+    else:
+        _csv = open_general(exchange)
+        df = _csv.drop('Unnamed: 9', axis=1)
+    return df
+

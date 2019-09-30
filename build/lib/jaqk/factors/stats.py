@@ -4,6 +4,8 @@ from ..operations.Open import open_file as _open_file
 
 # These are quite important and popular factors, so I list them out
 # so my client can use it like ROE-ROA, instead of factor(ROE)-factor(ROA), which is quite werid
+
+
 def ROE(stock):  # Financial Highlights
     """
     Return on Equity - a measure of financial performance calculated by Net Income / Shareholders' Equity

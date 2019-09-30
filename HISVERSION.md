@@ -40,3 +40,4 @@
 - 1am, Sep. 25th: Update rank.py, Folder.py, parse_main.py to debug.
 - 1pm, Sep. 25th: Update error_record class, parse_main.py to support tolerance factor.
 - 4pm, Sep. 25th: Update error_record class, parse_main.py to support downloading without using error cache file.
+#### 0.0.3.1 Upload changes in 0.0.2.3 to PyPI; Sep. 30th

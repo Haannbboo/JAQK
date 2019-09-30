@@ -2,6 +2,7 @@ import gc as _gc
 import numpy as _np
 import os as _os
 import pandas as _pd
+import time as _time
 
 from ..operations.Format import factor as _factor
 from ..operations.Open import open_file as _open_file
@@ -9,7 +10,7 @@ from ..operations.Path import path as _path
 from ..operations.Path import datapath
 
 
-def factor_percentile(Factor, stock):
+def factor_percentile(Factor, stock, prt_time=False):
     """Get the percentile ranking of a factor of a stock.
 
     Opens all files containing param Factor in database,
@@ -26,14 +27,18 @@ def factor_percentile(Factor, stock):
     Raises:
         TypeError: assess type of param Factor and stock.
     """
-
+    s = _time.time()
     _instance_check(Factor, str)  # raise TypeError
     _instance_check(stock, str)
 
     df = _get_df(Factor)
 
-    result = df.rank().loc[stock].tolist()
+    result = df.rank().loc[stock] / len(df)
+    result = [round(i, 5) for i in result.tolist()]
 
+    e = _time.time()
+    if prt_time is True:
+        print("Time taken for <jaqk.rank.factor_percentile> with <{} companies> is {}s".format(len(df), round((e-s)/5, 4)))
     _gc.collect()
     return result
 
@@ -63,7 +68,7 @@ def percentile(Factor, percentage=80):
     df = _get_df(Factor)  # get DataFrame from setup path
 
     target = df[df >= df.quantile(percentage / 100.0)].dropna(thresh=1)  # select percentile group
-    result = [target[i].dropna().index.tolist() for i in list(df)]  # get satisfied tickets
+    result = [_np.array(target[i].dropna().index.tolist()) for i in list(df)]  # get satisfied tickets
 
     _gc.collect()
     return _np.array(result)
@@ -249,7 +254,7 @@ def _write_error(i):
     except FileNotFoundError:
         f = set()
     f.update({i})  # update as set([i])
-    with open(path, 'w') as e:
+    with open(path, 'w+') as e:
         e.write('\n'.join(f))
 
 
