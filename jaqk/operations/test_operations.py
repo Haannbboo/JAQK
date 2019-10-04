@@ -11,16 +11,12 @@ from .Path import datapath
 
 class test_operations(_unittest.TestCase):
     def test_Folder(self):
-        from .Folder import create_folder
-        path = datapath(False, 'operations')
-        orig = _os.listdir(path)
-        x = len(orig)
-        if 'test_folder' not in orig:
-            x += 1
-        create_folder('test_folder', 'operations')
-        self.assertEqual(x, len(_os.listdir(path)))  # if exists - no change
+        from .Folder import create_folder, exist, delete
+        create_folder('test1', path='default')
+        self.assertTrue(exist('test', folder=True))
+        delete('test1', folder=True, warning=False)
 
-        from .Folder import exist
+
         self.assertTrue(exist('AAPL', 'income'))
         self.assertFalse(exist('AAPL', 'oaijc', update=True))
         self.assertTrue(exist('AAPL', ['income', 'balance', 'cash_flow']))
@@ -206,7 +202,8 @@ class test_operations(_unittest.TestCase):
         from .Trans import _translate
         try:
             self.assertEqual(_translate('hello world'), 'hello world')
-            self.assertEqual(_translate('hello world', t='zh'), '你好世界')
+            t = _translate('world', t='zh')
+            self.assertEqual(t, '世界')
         except TransInternetError:
             warn = "Translation failed because of poor internet connection. Check your internet pleases."
             raise Warning(warn)

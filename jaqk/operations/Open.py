@@ -19,7 +19,7 @@ def open_file(stock, name, setup=False):
                         + type(stock).__name__)
     if setup is True:  # when setup, name is "AAPL_income.csv", not "income"
         # path = _os.path.join(datapath(setup=False), stock, name)
-        path = datapath(True, stock, name)
+        path = datapath(True, stock, name, setup=True)
         df = _pd.read_csv(path)
         _gc.collect()
         return df
@@ -69,7 +69,7 @@ def open_general(file, setup=False):
             p = datapath(True, 'general', file)
             df = _pd.read_csv(p + '.csv')
         elif setup is True:
-            p = datapath(True, 'general', file)
+            p = datapath(True, 'general', file, setup=True)
             df = _pd.read_csv(p + '.py')
         else:
             df = None  # not tested here

@@ -2,15 +2,19 @@ import pandas as _pd
 import os as _os
 
 
-def datapath(database=True, *sheet_param):  # database
+def datapath(database=True, *sheet_param, **kwargs):  # database
     """
     The global datapath for all other file. It sets your selected path in jaqk.setup() as the main datapath,
     and all data will be added/deleted from there.
     """
+    setup = kwargs.get('setup', False)
+
     main_path = _os.path.abspath(_os.path.join(_os.path.dirname(__file__), _os.pardir))
     sheet_param = ['"{}"'.format(i) for i in sheet_param]
     if database is True:
         try:
+            if setup is True:  # go to original database
+                raise FileNotFoundError
             with open(_os.path.join(main_path, 'setup_cache.txt')) as w:
                 database_path = w.read()
         except FileNotFoundError:

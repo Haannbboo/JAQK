@@ -4,9 +4,11 @@ import pandas as _pd
 from .Path import datapath
 
 
-def create_folder(stock, path='default', setup=False):
+def create_folder(stock, path='default', **kwargs):
+    setup = kwargs.get('setup', False)  # default False
+    
     if path == 'default':
-        ppath = datapath(True, stock) # jaqk/database/AAPL
+        ppath = datapath(True, stock) # setup_path/AAPL
     else:
         if setup is True:
             ppath = _os.path.join(path, stock) # setup_path/AAPL
@@ -18,12 +20,19 @@ def create_folder(stock, path='default', setup=False):
         _os.makedirs(ppath)  # Create directory
 
 
-def exist(stock, file, update=False, error=None):
+def exist(stock, file=None, update=False, **kwargs):
     p1 = datapath(True, stock, stock)
     # if it needs update，then view it as not existing
     # and the save_file func handles the duplication
+    error = kwargs.get('error', None)
+    folder = kwargs.get('folder', False)
+    database = kwargs.get('database', True)  # default True
+    
     if update:
         return False
+
+    if folder is True:
+        return _os.path.exists(datapath(database, stock))
     
     if isinstance(file, str):
         path = p1 + '_' + file + '.csv'
@@ -34,6 +43,32 @@ def exist(stock, file, update=False, error=None):
         return eval(r)
     else:
         raise TypeError("Parameter 'file' should be either a string or a list of strings")
+
+
+def delete(*paths, **kwargs):
+    folder = kwargs.get('folder', False)
+    database = kwargs.get('database', True)
+    warning = kwargs.get('warning', True)
+    
+    path = datapath(database, *paths)
+    try:
+        _os.remove(path)
+        return None
+    except PermissionError:  # path is a folder
+        # folder_flag = True
+        pass
+
+    # if folder_flag is True:
+    confirm_flag = False
+    if warning is True:
+        confirm = input('Deleting a folder, please confirm by inputing "confirm": ')
+        if confirm == 'confirm':
+            confirm_flag = True
+    if confirm_flag or (folder is True):
+        files = _os.listdir(path)
+        [_os.remove(file) for files in files]  # remove files within folder
+        _os.removedirs(path)  # remove folder
+        
 
 
 def is_full(company):
