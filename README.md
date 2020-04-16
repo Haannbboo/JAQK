@@ -1,7 +1,6 @@
 # Welcome to JAQK financial data module
-> A light and useful toolkit developed for financial report getter and basic analysis and calculations.
 
-> It starts with an assignment, proceeds with deadlines, and grows with passions. - Hanbo Guo
+> A light and useful toolkit developed for financial report getter and basic analysis and calculations.
 
 _Author: Hanbo Guo_
 
@@ -48,7 +47,7 @@ python setup.py install
   - unittest >= 3.2.0
   
 ## Documentation
-The official documentation is hosted by [github.io]() (Nothing there right now...).
+The official documentation is [here](https://github.com/Haannbboo/JAQK/blob/master/docs/md/index.md).
   
 ## Getting help
 For usage questions, the best place to go to is [StackOverflow](https://stackoverflow.com/questions/tagged/JAQK);
